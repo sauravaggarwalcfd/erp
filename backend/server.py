@@ -616,11 +616,19 @@ async def get_boms(status: Optional[str] = None, current_user: User = Depends(ge
     query = {}
     if status:
         query["status"] = status
-    boms = await db.boms.find(query, {"_id": 0}).to_list(1000)
-    for bom in boms:
-        if isinstance(bom['created_at'], str):
+    
+    # Fetch from both collections
+    boms_regular = await db.boms.find(query, {"_id": 0}).to_list(1000)
+    boms_comprehensive = await db.comprehensive_boms.find(query, {"_id": 0}).to_list(1000)
+    
+    # Combine both lists
+    all_boms = boms_regular + boms_comprehensive
+    
+    for bom in all_boms:
+        if isinstance(bom.get('created_at'), str):
             bom['created_at'] = datetime.fromisoformat(bom['created_at'])
-    return boms
+    
+    return all_boms
 
 @api_router.get("/boms/{bom_id}", response_model=BOM)
 async def get_bom(bom_id: str, current_user: User = Depends(get_current_user)):
