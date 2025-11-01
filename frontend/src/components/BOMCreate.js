@@ -63,20 +63,26 @@ export default function BOMCreate({ onCancel, onSave }) {
     }
   ]);
 
-  // TRIMS Tab - Trims items
-  const [trimsItems, setTrimsItems] = useState([
+  // TRIMS Tab - Multiple tables synchronized with FABRIC tables
+  const [trimsTables, setTrimsTables] = useState([
     {
-      srNo: 1,
-      comboName: "", // From FABRIC tab
-      trimType: "",
-      itemName: "",
-      itemCode: "",
-      color: "",
-      size: "",
-      quantity: "",
-      supplier: "",
-      unitPrice: "",
-      totalCost: ""
+      id: 1,
+      name: "Trims for BOM Table 1",
+      items: [
+        {
+          srNo: 1,
+          comboName: "", // From corresponding FABRIC tab
+          trimType: "",
+          itemName: "",
+          itemCode: "",
+          color: "",
+          size: "",
+          quantity: "",
+          supplier: "",
+          unitPrice: "",
+          totalCost: ""
+        }
+      ]
     }
   ]);
 
