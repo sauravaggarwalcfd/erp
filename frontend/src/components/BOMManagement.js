@@ -14,51 +14,58 @@ const API = `${BACKEND_URL}/api`;
 
 export default function BOMManagement({ user, onLogout }) {
   const [boms, setBoms] = useState([]);
-  const [articles, setArticles] = useState([]);
-  const [colors, setColors] = useState([]);
-  const [materials, setMaterials] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [createOpen, setCreateOpen] = useState(false);
-  const [viewOpen, setViewOpen] = useState(false);
-  const [selectedBOM, setSelectedBOM] = useState(null);
-
-  // Form state
-  const [formData, setFormData] = useState({
-    article_id: "",
-    color_id: "",
-    items: []
-  });
-
-  const [currentItem, setCurrentItem] = useState({
-    material_id: "",
-    avg_consumption: 0,
-    wastage_percent: 0
-  });
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [viewBOM, setViewBOM] = useState(null);
 
   useEffect(() => {
-    fetchData();
+    fetchBOMs();
   }, []);
 
-  const fetchData = async () => {
+  const fetchBOMs = async () => {
     setLoading(true);
     try {
-      const [bomsRes, articlesRes, colorsRes, materialsRes] = await Promise.all([
-        axios.get(`${API}/boms`),
-        axios.get(`${API}/articles`),
-        axios.get(`${API}/colors`),
-        axios.get(`${API}/raw-materials`)
-      ]);
-
-      setBoms(bomsRes.data);
-      setArticles(articlesRes.data);
-      setColors(colorsRes.data);
-      setMaterials(materialsRes.data);
+      const response = await axios.get(`${API}/boms`);
+      setBoms(response.data);
     } catch (error) {
-      toast.error("Error fetching data");
+      toast.error("Error fetching BOMs");
     } finally {
       setLoading(false);
     }
   };
+
+  const handleSaveBOM = async (bomData) => {
+    try {
+      await axios.post(`${API}/boms/comprehensive`, bomData);
+      toast.success("BOM created successfully");
+      setShowCreateForm(false);
+      fetchBOMs();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Error creating BOM");
+    }
+  };
+
+  const handleDeleteBOM = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this BOM?")) return;
+    try {
+      await axios.delete(`${API}/boms/${id}`);
+      toast.success("BOM deleted successfully");
+      fetchBOMs();
+    } catch (error) {
+      toast.error("Error deleting BOM");
+    }
+  };
+
+  if (showCreateForm) {
+    return (
+      <Layout user={user} onLogout={onLogout}>
+        <BOMCreate
+          onCancel={() => setShowCreateForm(false)}
+          onSave={handleSaveBOM}
+        />
+      </Layout>
+    );
+  }
 
   const addItemToBOM = () => {
     if (!currentItem.material_id || currentItem.avg_consumption <= 0) {
