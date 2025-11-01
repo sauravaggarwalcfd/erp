@@ -16,6 +16,8 @@ export default function BOMManagement({ user, onLogout }) {
   const [boms, setBoms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [selectedBOM, setSelectedBOM] = useState(null);
+  const [viewMode, setViewMode] = useState("list"); // "list" | "view" | "create"
 
   useEffect(() => {
     fetchBOMs();
