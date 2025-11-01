@@ -427,41 +427,41 @@ export default function BOMCreate({ onCancel, onSave, onEdit, mode = "create", i
           <div className="grid grid-cols-4 gap-4">
             <div className="space-y-2">
               <Label>Date</Label>
-              <Input type="date" value={headerData.date} onChange={(e) => setHeaderData({ ...headerData, date: e.target.value })} />
+              <Input type="date" value={headerData.date} onChange={(e) => setHeaderData({ ...headerData, date: e.target.value })} disabled={isReadOnly} />
             </div>
             <div className="space-y-2">
               <Label>Image Reference</Label>
-              <Input value={headerData.imageReference} onChange={(e) => setHeaderData({ ...headerData, imageReference: e.target.value })} placeholder="SUMMER-2026" />
+              <Input value={headerData.imageReference} onChange={(e) => setHeaderData({ ...headerData, imageReference: e.target.value })} placeholder="SUMMER-2026" disabled={isReadOnly} />
             </div>
             <div className="space-y-2">
               <Label>Art No *</Label>
-              <select className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm" value={headerData.artNo} onChange={(e) => setHeaderData({ ...headerData, artNo: e.target.value })}>
+              <select className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm" value={headerData.artNo} onChange={(e) => setHeaderData({ ...headerData, artNo: e.target.value })} disabled={isReadOnly}>
                 <option value="">Select Article</option>
                 {articles.map((art) => (<option key={art.id} value={art.code}>{art.code} - {art.name}</option>))}
               </select>
             </div>
             <div className="space-y-2">
               <Label>Plan Qty</Label>
-              <Input type="number" value={headerData.planQty} onChange={(e) => setHeaderData({ ...headerData, planQty: e.target.value })} />
+              <Input type="number" value={headerData.planQty} onChange={(e) => setHeaderData({ ...headerData, planQty: e.target.value })} disabled={isReadOnly} />
             </div>
             <div className="space-y-2">
               <Label>Set No</Label>
-              <Input value={headerData.setNo} onChange={(e) => setHeaderData({ ...headerData, setNo: e.target.value })} />
+              <Input value={headerData.setNo} onChange={(e) => setHeaderData({ ...headerData, setNo: e.target.value })} disabled={isReadOnly} />
             </div>
             <div className="space-y-2">
               <Label>Buyer</Label>
-              <select className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm" value={headerData.buyer} onChange={(e) => setHeaderData({ ...headerData, buyer: e.target.value })}>
+              <select className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm" value={headerData.buyer} onChange={(e) => setHeaderData({ ...headerData, buyer: e.target.value })} disabled={isReadOnly}>
                 <option value="">Select Buyer</option>
                 {buyers.map((buyer) => (<option key={buyer.id} value={buyer.name}>{buyer.name}</option>))}
               </select>
             </div>
             <div className="space-y-2">
               <Label>Style Number *</Label>
-              <Input value={headerData.styleNumber} onChange={(e) => setHeaderData({ ...headerData, styleNumber: e.target.value })} required />
+              <Input value={headerData.styleNumber} onChange={(e) => setHeaderData({ ...headerData, styleNumber: e.target.value })} required disabled={isReadOnly} />
             </div>
             <div className="space-y-2">
               <Label>Remarks</Label>
-              <Input value={headerData.remarks} onChange={(e) => setHeaderData({ ...headerData, remarks: e.target.value })} />
+              <Input value={headerData.remarks} onChange={(e) => setHeaderData({ ...headerData, remarks: e.target.value })} disabled={isReadOnly} />
             </div>
           </div>
         </CardContent>
