@@ -1,8 +1,8 @@
 {
-  "timestamp": "2025-11-01T20:35:04.864765",
-  "total_tests": 38,
-  "passed_tests": 32,
-  "success_rate": 84.21052631578947,
+  "timestamp": "2025-11-01T20:35:43.049730",
+  "total_tests": 42,
+  "passed_tests": 41,
+  "success_rate": 97.61904761904762,
   "test_details": [
     {
       "test": "Register Admin User",
@@ -91,13 +91,13 @@
     },
     {
       "test": "Get All BOMs",
-      "success": false,
-      "details": "Status: 500, Expected: 200, Response: Internal Server Error"
+      "success": true,
+      "details": "Status: 200"
     },
     {
       "test": "Get Unassigned BOMs",
-      "success": false,
-      "details": "Status: 500, Expected: 200, Response: Internal Server Error"
+      "success": true,
+      "details": "Status: 200"
     },
     {
       "test": "Get Specific BOM",
@@ -116,13 +116,23 @@
     },
     {
       "test": "Get All BOMs (including comprehensive)",
-      "success": false,
-      "details": "Status: 500, Expected: 200, Response: Internal Server Error"
+      "success": true,
+      "details": "Status: 200"
     },
     {
-      "test": "Get All BOMs Response",
-      "success": false,
-      "details": "Invalid response format"
+      "test": "Comprehensive BOM in List",
+      "success": true,
+      "details": "Found BOM with ID: 9e9c51ed-e47c-4eef-969b-ce7ca6a32089"
+    },
+    {
+      "test": "Comprehensive BOM Structure",
+      "success": true,
+      "details": "All required fields present"
+    },
+    {
+      "test": "Comprehensive BOM Status",
+      "success": true,
+      "details": "Status is 'assigned'"
     },
     {
       "test": "Create Multi-Table BOM",
@@ -131,8 +141,18 @@
     },
     {
       "test": "Get Multi-Table BOM",
-      "success": false,
-      "details": "Status: 500, Expected: 200, Response: Internal Server Error"
+      "success": true,
+      "details": "Status: 200"
+    },
+    {
+      "test": "Multiple Fabric Tables",
+      "success": true,
+      "details": "Found 2 fabric tables"
+    },
+    {
+      "test": "Multiple Trims Tables",
+      "success": true,
+      "details": "Found 2 trims tables"
     },
     {
       "test": "Create MRP",
