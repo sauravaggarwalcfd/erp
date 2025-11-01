@@ -758,43 +758,43 @@ export default function Masters({ user, onLogout }) {
           </div>
           <div className="space-y-2">
             <Label>Count/Const</Label>
-            <Input value={formData.count_const} onChange={(e) => setFormData({ ...formData, count_const: e.target.value })} required />
+            <Input value={formData.count_const || ""} onChange={(e) => setFormData({ ...formData, count_const: e.target.value })} required />
           </div>
         </div>
         <div className="space-y-2">
           <Label>Fabric Name</Label>
-          <Input value={formData.fabric_name} onChange={(e) => setFormData({ ...formData, fabric_name: e.target.value })} required />
+          <Input value={formData.fabric_name || ""} onChange={(e) => setFormData({ ...formData, fabric_name: e.target.value })} required />
         </div>
         <div className="space-y-2">
           <Label>Composition</Label>
-          <Input value={formData.composition} onChange={(e) => setFormData({ ...formData, composition: e.target.value })} required />
+          <Input value={formData.composition || ""} onChange={(e) => setFormData({ ...formData, composition: e.target.value })} required />
         </div>
         <div className="space-y-2">
           <Label>Add Description</Label>
-          <Input value={formData.add_description} onChange={(e) => setFormData({ ...formData, add_description: e.target.value })} required />
+          <Input value={formData.add_description || ""} onChange={(e) => setFormData({ ...formData, add_description: e.target.value })} required />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>GSM (Optional)</Label>
-            <Input type="number" value={formData.gsm} onChange={(e) => setFormData({ ...formData, gsm: e.target.value })} />
+            <Input type="number" value={formData.gsm || ""} onChange={(e) => setFormData({ ...formData, gsm: e.target.value })} />
           </div>
           <div className="space-y-2">
             <Label>Width (Optional)</Label>
-            <Input value={formData.width} onChange={(e) => setFormData({ ...formData, width: e.target.value })} />
+            <Input value={formData.width || ""} onChange={(e) => setFormData({ ...formData, width: e.target.value })} />
           </div>
         </div>
         <div className="space-y-2">
           <Label>Color (Optional)</Label>
-          <Input value={formData.color} onChange={(e) => setFormData({ ...formData, color: e.target.value })} />
+          <Input value={formData.color || ""} onChange={(e) => setFormData({ ...formData, color: e.target.value })} />
         </div>
         <div className="space-y-2">
           <Label>Final Item</Label>
-          <Input value={formData.final_item} onChange={(e) => setFormData({ ...formData, final_item: e.target.value })} required />
+          <Input value={formData.final_item || ""} onChange={(e) => setFormData({ ...formData, final_item: e.target.value })} required />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Avg Roll Size (Optional)</Label>
-            <Input value={formData.avg_roll_size} onChange={(e) => setFormData({ ...formData, avg_roll_size: e.target.value })} />
+            <Input value={formData.avg_roll_size || ""} onChange={(e) => setFormData({ ...formData, avg_roll_size: e.target.value })} />
           </div>
           <div className="space-y-2">
             <Label>Unit</Label>
