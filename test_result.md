@@ -121,6 +121,9 @@ backend:
       - working: true
         agent: "main"
         comment: "Updated create_comprehensive_bom endpoint to accept fabricTables, trimsTables, and operations. Backend started successfully."
+      - working: true
+        agent: "testing"
+        comment: "TESTED: POST /api/boms/comprehensive successfully creates BOMs with complete data structure (header, fabricTables, trimsTables, operations). Returns 200 with bom_id and success message. All test cases passed."
   
   - task: "Update BOM fetch API to retrieve from comprehensive_boms collection"
     implemented: true
@@ -133,6 +136,9 @@ backend:
       - working: true
         agent: "main"
         comment: "Updated get_boms to fetch from both boms and comprehensive_boms collections. Backend running properly."
+      - working: true
+        agent: "testing"
+        comment: "TESTED: GET /api/boms successfully retrieves both regular and comprehensive BOMs. Fixed Pydantic validation issue by removing strict response model. Comprehensive BOMs have fabricTables, trimsTables, operations fields and status='assigned'. Multiple table structures (2 FABRIC + 2 TRIMS tables) saved and retrieved correctly."
   
   - task: "Update BOM delete API to handle comprehensive_boms"
     implemented: true
@@ -145,6 +151,9 @@ backend:
       - working: true
         agent: "main"
         comment: "Updated delete_bom to remove from both collections."
+      - working: true
+        agent: "testing"
+        comment: "TESTED: DELETE /api/boms/{id} successfully removes BOMs from both regular and comprehensive collections. Cleanup operations working correctly."
 
 frontend:
   - task: "Implement synchronized TRIMS tables with FABRIC tables"
