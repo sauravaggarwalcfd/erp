@@ -488,19 +488,21 @@ export default function BOMCreate({ onCancel, onSave, onEdit, mode = "create", i
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <CardTitle>{table.name}</CardTitle>
-                  <div className="flex gap-2">
-                    <Button onClick={() => addRow(table.id)} className="bg-green-600 hover:bg-green-700">
-                      <Plus className="w-4 h-4 mr-2" />Add Row
-                    </Button>
-                    <Button onClick={() => copyTable(table.id)} className="bg-blue-600 hover:bg-blue-700">
-                      <Copy className="w-4 h-4 mr-2" />Copy Table
-                    </Button>
-                    {bomTables.length > 1 && (
-                      <Button onClick={() => deleteTable(table.id)} variant="outline" className="text-red-600">
-                        <Trash2 className="w-4 h-4 mr-2" />Delete Table
+                  {!isReadOnly && (
+                    <div className="flex gap-2">
+                      <Button onClick={() => addRow(table.id)} className="bg-green-600 hover:bg-green-700">
+                        <Plus className="w-4 h-4 mr-2" />Add Row
                       </Button>
-                    )}
-                  </div>
+                      <Button onClick={() => copyTable(table.id)} className="bg-blue-600 hover:bg-blue-700">
+                        <Copy className="w-4 h-4 mr-2" />Copy Table
+                      </Button>
+                      {bomTables.length > 1 && (
+                        <Button onClick={() => deleteTable(table.id)} variant="outline" className="text-red-600">
+                          <Trash2 className="w-4 h-4 mr-2" />Delete Table
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </CardHeader>
               <CardContent>
