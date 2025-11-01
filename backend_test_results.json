@@ -1,8 +1,8 @@
 {
-  "timestamp": "2025-11-01T12:04:44.404129",
-  "total_tests": 32,
-  "passed_tests": 31,
-  "success_rate": 96.875,
+  "timestamp": "2025-11-01T20:35:04.864765",
+  "total_tests": 38,
+  "passed_tests": 32,
+  "success_rate": 84.21052631578947,
   "test_details": [
     {
       "test": "Register Admin User",
@@ -91,18 +91,48 @@
     },
     {
       "test": "Get All BOMs",
-      "success": true,
-      "details": "Status: 200"
+      "success": false,
+      "details": "Status: 500, Expected: 200, Response: Internal Server Error"
     },
     {
       "test": "Get Unassigned BOMs",
-      "success": true,
-      "details": "Status: 200"
+      "success": false,
+      "details": "Status: 500, Expected: 200, Response: Internal Server Error"
     },
     {
       "test": "Get Specific BOM",
       "success": true,
       "details": "Status: 200"
+    },
+    {
+      "test": "Create Comprehensive BOM",
+      "success": true,
+      "details": "Status: 200"
+    },
+    {
+      "test": "Comprehensive BOM Success Message",
+      "success": true,
+      "details": "BOM created successfully with all tabs"
+    },
+    {
+      "test": "Get All BOMs (including comprehensive)",
+      "success": false,
+      "details": "Status: 500, Expected: 200, Response: Internal Server Error"
+    },
+    {
+      "test": "Get All BOMs Response",
+      "success": false,
+      "details": "Invalid response format"
+    },
+    {
+      "test": "Create Multi-Table BOM",
+      "success": true,
+      "details": "Status: 200"
+    },
+    {
+      "test": "Get Multi-Table BOM",
+      "success": false,
+      "details": "Status: 500, Expected: 200, Response: Internal Server Error"
     },
     {
       "test": "Create MRP",
@@ -112,7 +142,7 @@
     {
       "test": "MRP Number Format",
       "success": true,
-      "details": "Generated: MRP-00001"
+      "details": "Generated: MRP-00003"
     },
     {
       "test": "Get All MRPs",
