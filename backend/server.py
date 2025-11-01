@@ -712,6 +712,7 @@ async def upload_excel(file: UploadFile = File(...), current_user: User = Depend
             "articles_added": 0,
             "sizes_added": 0,
             "raw_materials_added": 0,
+            "fabrics_added": 0,
             "errors": []
         }
         
