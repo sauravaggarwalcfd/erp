@@ -381,7 +381,7 @@ export default function BOMCreate({ onCancel, onSave }) {
     const bomData = {
       header: headerData,
       fabricTables: bomTables,
-      trims: trimsItems,
+      trimsTables: trimsTables,
       operations: operationsItems
     };
 
