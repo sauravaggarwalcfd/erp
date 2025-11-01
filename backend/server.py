@@ -169,6 +169,7 @@ class Fabric(BaseModel):
     final_item: str
     avg_roll_size: Optional[str] = None
     unit: str
+    image_url: Optional[str] = None  # New field for image
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class FabricCreate(BaseModel):
@@ -183,6 +184,7 @@ class FabricCreate(BaseModel):
     final_item: str
     avg_roll_size: Optional[str] = None
     unit: str
+    image_url: Optional[str] = None  # New field for image
 
 # BOM Models
 class BOMItem(BaseModel):
