@@ -155,7 +155,11 @@ export default function BOMManagement({ user, onLogout }) {
                   </TableHeader>
                   <TableBody>
                     {boms.map((bom) => (
-                      <TableRow key={bom.id}>
+                      <TableRow 
+                        key={bom.id}
+                        className="cursor-pointer hover:bg-slate-50"
+                        onClick={() => handleViewBOM(bom)}
+                      >
                         <TableCell className="font-medium">{bom.article_name || bom.header?.styleNumber || "N/A"}</TableCell>
                         <TableCell>{bom.color_name || "N/A"}</TableCell>
                         <TableCell>₹{bom.total_cost?.toFixed(2) || "0.00"}</TableCell>
@@ -172,7 +176,21 @@ export default function BOMManagement({ user, onLogout }) {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleDeleteBOM(bom.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewBOM(bom);
+                            }}
+                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteBOM(bom.id);
+                            }}
                             className="text-red-600 hover:text-red-700 hover:bg-red-50"
                           >
                             <Trash2 className="w-4 h-4" />
