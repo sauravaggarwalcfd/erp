@@ -888,6 +888,39 @@ async def upload_excel(file: UploadFile = File(...), current_user: User = Depend
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing Excel file: {str(e)}")
 
+# Image Upload Route
+@api_router.post("/upload-image")
+async def upload_image(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
+    try:
+        # Create uploads directory if it doesn't exist
+        upload_dir = Path("/app/uploads")
+        upload_dir.mkdir(exist_ok=True)
+        
+        # Generate unique filename
+        file_extension = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+        unique_filename = f"{uuid.uuid4()}.{file_extension}"
+        file_path = upload_dir / unique_filename
+        
+        # Save file
+        contents = await file.read()
+        with open(file_path, "wb") as f:
+            f.write(contents)
+        
+        # Return the URL path
+        image_url = f"/uploads/{unique_filename}"
+        
+        return {
+            "message": "Image uploaded successfully",
+            "image_url": image_url,
+            "filename": unique_filename
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error uploading image: {str(e)}")
+
 # Include router
 app.include_router(api_router)
 
