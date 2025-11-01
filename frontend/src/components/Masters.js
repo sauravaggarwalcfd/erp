@@ -966,14 +966,17 @@ export default function Masters({ user, onLogout }) {
           <TabsContent value="fabrics">
             <MasterTable
               title="Fabrics"
-              description="Manage fabric master data"
+              description="Manage fabric master data - All 11 columns from Excel"
               columns={[
-                { key: "item_type", label: "Type" },
+                { key: "item_type", label: "Item Type" },
                 { key: "count_const", label: "Count/Const" },
                 { key: "fabric_name", label: "Fabric Name" },
                 { key: "composition", label: "Composition" },
-                { key: "add_description", label: "Description" },
+                { key: "add_description", label: "Add Description" },
+                { key: "gsm", label: "GSM" },
+                { key: "width", label: "Width" },
                 { key: "color", label: "Color" },
+                { key: "final_item", label: "Final Item" },
                 { key: "avg_roll_size", label: "Avg Roll Size" },
                 { key: "unit", label: "Unit" }
               ]}
