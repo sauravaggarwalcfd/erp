@@ -147,7 +147,16 @@ export default function BOMCreate({ onCancel, onSave }) {
       items: [{ srNo: 1, comboName: "", lotNo: "", lotCount: "", colourId: "", colourCode: "", colour: "", fabricQuality: "", fcNo: "", planRat: "", gsm: "", priority: "", component: "", avgUnit: "kg", orderPcs: "", extraPcs: "", wastagePcs: "", readyFabricNeed: "", shortage: "", greigeFabricNeed: "" }]
     };
     setBomTables([...bomTables, newTable]);
-    toast.success("New empty table added");
+    
+    // Auto-create corresponding TRIMS table
+    const newTrimsTable = {
+      id: newId,
+      name: `Trims for BOM Table ${newId}`,
+      items: [{ srNo: 1, comboName: "", trimType: "", itemName: "", itemCode: "", color: "", size: "", quantity: "", supplier: "", unitPrice: "", totalCost: "" }]
+    };
+    setTrimsTables([...trimsTables, newTrimsTable]);
+    
+    toast.success("New FABRIC and TRIMS tables added");
   };
 
   const copyTable = (tableId) => {
@@ -160,7 +169,19 @@ export default function BOMCreate({ onCancel, onSave }) {
         items: tableToCopy.items.map(item => ({ ...item }))
       };
       setBomTables([...bomTables, copiedTable]);
-      toast.success("Table copied successfully");
+      
+      // Auto-copy corresponding TRIMS table
+      const trimsToCopy = trimsTables.find(t => t.id === tableId);
+      if (trimsToCopy) {
+        const copiedTrimsTable = {
+          id: newId,
+          name: `Trims for ${tableToCopy.name} (Copy)`,
+          items: trimsToCopy.items.map(item => ({ ...item }))
+        };
+        setTrimsTables([...trimsTables, copiedTrimsTable]);
+      }
+      
+      toast.success("FABRIC and TRIMS tables copied successfully");
     }
   };
 
@@ -169,9 +190,12 @@ export default function BOMCreate({ onCancel, onSave }) {
       toast.error("Cannot delete the last table");
       return;
     }
-    if (!window.confirm("Are you sure you want to delete this table?")) return;
+    if (!window.confirm("Are you sure you want to delete this FABRIC table and its corresponding TRIMS table?")) return;
+    
     setBomTables(bomTables.filter(t => t.id !== tableId));
-    toast.success("Table deleted");
+    setTrimsTables(trimsTables.filter(t => t.id !== tableId));
+    
+    toast.success("FABRIC and TRIMS tables deleted");
   };
 
   const addRow = (tableId) => {
