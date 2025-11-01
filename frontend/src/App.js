@@ -122,6 +122,10 @@ function App() {
               )
             }
           />
+          <Route
+            path="/bom-options"
+            element={<BOMLayoutOptions />}
+          />
         </Routes>
       </BrowserRouter>
     </div>
