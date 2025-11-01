@@ -839,6 +839,7 @@ export default function Masters({ user, onLogout }) {
             <TabsTrigger value="colors" data-testid="tab-colors">Colors</TabsTrigger>
             <TabsTrigger value="sizes" data-testid="tab-sizes">Sizes</TabsTrigger>
             <TabsTrigger value="articles" data-testid="tab-articles">Articles</TabsTrigger>
+            <TabsTrigger value="fabrics" data-testid="tab-fabrics">Fabrics</TabsTrigger>
           </TabsList>
 
           <TabsContent value="buyers">
