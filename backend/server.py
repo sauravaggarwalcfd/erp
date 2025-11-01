@@ -638,14 +638,66 @@ async def get_boms(status: Optional[str] = None, current_user: User = Depends(ge
     
     return all_boms
 
-@api_router.get("/boms/{bom_id}", response_model=BOM)
+@api_router.get("/boms/{bom_id}")
 async def get_bom(bom_id: str, current_user: User = Depends(get_current_user)):
+    # Try finding in regular BOMs first
     bom = await db.boms.find_one({"id": bom_id}, {"_id": 0})
+    
+    # If not found, try comprehensive BOMs
+    if not bom:
+        bom = await db.comprehensive_boms.find_one({"id": bom_id}, {"_id": 0})
+    
     if not bom:
         raise HTTPException(status_code=404, detail="BOM not found")
-    if isinstance(bom['created_at'], str):
+    
+    if isinstance(bom.get('created_at'), str):
         bom['created_at'] = datetime.fromisoformat(bom['created_at'])
-    return BOM(**bom)
+    
+    return bom
+
+@api_router.put("/boms/{bom_id}")
+async def update_bom(bom_id: str, bom_data: dict, current_user: User = Depends(get_current_user)):
+    try:
+        # Check if BOM exists in either collection
+        existing_bom = await db.boms.find_one({"id": bom_id})
+        collection = db.boms
+        
+        if not existing_bom:
+            existing_bom = await db.comprehensive_boms.find_one({"id": bom_id})
+            collection = db.comprehensive_boms
+        
+        if not existing_bom:
+            raise HTTPException(status_code=404, detail="BOM not found")
+        
+        # Update the BOM
+        header = bom_data.get("header", {})
+        fabric_tables = bom_data.get("fabricTables", [])
+        trims_tables = bom_data.get("trimsTables", [])
+        operations = bom_data.get("operations", [])
+        
+        update_doc = {
+            "header": header,
+            "fabricTables": fabric_tables,
+            "trimsTables": trims_tables,
+            "operations": operations,
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "updated_by": current_user.username
+        }
+        
+        result = await collection.update_one(
+            {"id": bom_id},
+            {"$set": update_doc}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=400, detail="BOM update failed")
+        
+        return {
+            "message": "BOM updated successfully",
+            "bom_id": bom_id
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating BOM: {str(e)}")
 
 @api_router.delete("/boms/{bom_id}")
 async def delete_bom(bom_id: str, current_user: User = Depends(get_current_user)):
