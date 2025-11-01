@@ -276,46 +276,57 @@ export default function BOMCreate({ onCancel, onSave }) {
   };
 
   // ===== TRIMS TAB FUNCTIONS =====
-  const addTrimsRow = () => {
-    setTrimsItems([...trimsItems, {
-      srNo: trimsItems.length + 1,
-      comboName: "",
-      trimType: "",
-      itemName: "",
-      itemCode: "",
-      color: "",
-      size: "",
-      quantity: "",
-      supplier: "",
-      unitPrice: "",
-      totalCost: ""
-    }]);
+  const addTrimsRow = (tableId) => {
+    setTrimsTables(trimsTables.map(table => {
+      if (table.id === tableId) {
+        return {
+          ...table,
+          items: [...table.items, { srNo: table.items.length + 1, comboName: "", trimType: "", itemName: "", itemCode: "", color: "", size: "", quantity: "", supplier: "", unitPrice: "", totalCost: "" }]
+        };
+      }
+      return table;
+    }));
   };
 
-  const deleteTrimsRow = (index) => {
-    const newItems = trimsItems.filter((_, i) => i !== index);
-    newItems.forEach((item, i) => { item.srNo = i + 1; });
-    setTrimsItems(newItems);
+  const deleteTrimsRow = (tableId, rowIndex) => {
+    setTrimsTables(trimsTables.map(table => {
+      if (table.id === tableId) {
+        const newItems = table.items.filter((_, i) => i !== rowIndex);
+        newItems.forEach((item, i) => { item.srNo = i + 1; });
+        return { ...table, items: newItems };
+      }
+      return table;
+    }));
   };
 
-  const copyTrimsRow = (index) => {
-    const itemToCopy = { ...trimsItems[index] };
-    const newItem = { ...itemToCopy, srNo: trimsItems.length + 1 };
-    setTrimsItems([...trimsItems, newItem]);
+  const copyTrimsRow = (tableId, rowIndex) => {
+    setTrimsTables(trimsTables.map(table => {
+      if (table.id === tableId) {
+        const itemToCopy = { ...table.items[rowIndex] };
+        const newItem = { ...itemToCopy, srNo: table.items.length + 1 };
+        return { ...table, items: [...table.items, newItem] };
+      }
+      return table;
+    }));
     toast.success("Trim row copied");
   };
 
-  const updateTrimsItem = (index, field, value) => {
-    const newItems = [...trimsItems];
-    newItems[index][field] = value;
+  const updateTrimsItem = (tableId, rowIndex, field, value) => {
+    setTrimsTables(trimsTables.map(table => {
+      if (table.id === tableId) {
+        const newItems = [...table.items];
+        newItems[rowIndex][field] = value;
 
-    if (field === "quantity" || field === "unitPrice") {
-      const qty = parseFloat(newItems[index].quantity) || 0;
-      const price = parseFloat(newItems[index].unitPrice) || 0;
-      newItems[index].totalCost = (qty * price).toFixed(2);
-    }
+        if (field === "quantity" || field === "unitPrice") {
+          const qty = parseFloat(newItems[rowIndex].quantity) || 0;
+          const price = parseFloat(newItems[rowIndex].unitPrice) || 0;
+          newItems[rowIndex].totalCost = (qty * price).toFixed(2);
+        }
 
-    setTrimsItems(newItems);
+        return { ...table, items: newItems };
+      }
+      return table;
+    }));
   };
 
   // ===== OPERATIONS TAB FUNCTIONS =====
