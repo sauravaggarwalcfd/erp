@@ -962,6 +962,26 @@ export default function Masters({ user, onLogout }) {
               loading={loading}
             />
           </TabsContent>
+
+          <TabsContent value="fabrics">
+            <MasterTable
+              title="Fabrics"
+              description="Manage fabric master data"
+              columns={[
+                { key: "item_type", label: "Type" },
+                { key: "count_const", label: "Count/Const" },
+                { key: "fabric_name", label: "Fabric Name" },
+                { key: "composition", label: "Composition" },
+                { key: "final_item", label: "Final Item" }
+              ]}
+              data={fabrics}
+              onAdd={handleAddFabric}
+              onEdit={handleEditFabric}
+              onDelete={handleDeleteFabric}
+              renderForm={FabricForm}
+              loading={loading}
+            />
+          </TabsContent>
         </Tabs>
       </div>
     </Layout>
