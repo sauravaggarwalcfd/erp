@@ -379,6 +379,38 @@ export default function Masters({ user, onLogout }) {
     }
   };
 
+  // Fabric handlers
+  const handleAddFabric = async (data) => {
+    try {
+      await axios.post(`${API}/fabrics`, data);
+      toast.success("Fabric added successfully");
+      fetchAllMasters();
+    } catch (error) {
+      toast.error("Error adding fabric");
+    }
+  };
+
+  const handleEditFabric = async (id, data) => {
+    try {
+      await axios.put(`${API}/fabrics/${id}`, data);
+      toast.success("Fabric updated successfully");
+      fetchAllMasters();
+    } catch (error) {
+      toast.error("Error updating fabric");
+    }
+  };
+
+  const handleDeleteFabric = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this fabric?")) return;
+    try {
+      await axios.delete(`${API}/fabrics/${id}`);
+      toast.success("Fabric deleted successfully");
+      fetchAllMasters();
+    } catch (error) {
+      toast.error("Error deleting fabric");
+    }
+  };
+
   // Form components
   const BuyerForm = (editItem, onSubmit) => {
     const [formData, setFormData] = useState(editItem || {
