@@ -580,11 +580,13 @@ export default function BOMCreate({ onCancel, onSave, onEdit, mode = "create", i
               </CardContent>
             </Card>
           ))}
-          <div className="flex justify-center">
-            <Button onClick={addNewTable} size="lg" className="bg-purple-600 hover:bg-purple-700">
-              <FileText className="w-5 h-5 mr-2" />Add New Empty Table
-            </Button>
-          </div>
+          {!isReadOnly && (
+            <div className="flex justify-center">
+              <Button onClick={addNewTable} size="lg" className="bg-purple-600 hover:bg-purple-700">
+                <FileText className="w-5 h-5 mr-2" />Add New Empty Table
+              </Button>
+            </div>
+          )}
         </TabsContent>
 
         {/* TRIMS TAB CONTENT */}
