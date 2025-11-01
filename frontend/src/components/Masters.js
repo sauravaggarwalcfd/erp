@@ -127,13 +127,14 @@ export default function Masters({ user, onLogout }) {
   const fetchAllMasters = async () => {
     setLoading(true);
     try {
-      const [buyersRes, suppliersRes, materialsRes, colorsRes, sizesRes, articlesRes] = await Promise.all([
+      const [buyersRes, suppliersRes, materialsRes, colorsRes, sizesRes, articlesRes, fabricsRes] = await Promise.all([
         axios.get(`${API}/buyers`),
         axios.get(`${API}/suppliers`),
         axios.get(`${API}/raw-materials`),
         axios.get(`${API}/colors`),
         axios.get(`${API}/sizes`),
-        axios.get(`${API}/articles`)
+        axios.get(`${API}/articles`),
+        axios.get(`${API}/fabrics`)
       ]);
 
       setBuyers(buyersRes.data);
@@ -142,6 +143,7 @@ export default function Masters({ user, onLogout }) {
       setColors(colorsRes.data);
       setSizes(sizesRes.data);
       setArticles(articlesRes.data);
+      setFabrics(fabricsRes.data);
     } catch (error) {
       toast.error("Error fetching masters");
     } finally {
