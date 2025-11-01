@@ -443,6 +443,325 @@ class GarmentERPTester:
         
         return False
 
+    def test_comprehensive_bom_creation(self):
+        """Test Comprehensive BOM creation with FABRIC, TRIMS, and OPERATIONS"""
+        print("\n🔍 Testing Comprehensive BOM Creation...")
+        
+        # Test Case 1: Create BOM with complete data
+        comprehensive_bom_data = {
+            "header": {
+                "date": "2025-01-15",
+                "artNo": "ART001",
+                "styleNumber": "STY001",
+                "buyer": "Premium Fashion Co",
+                "planQty": "1000",
+                "setNo": "SET001",
+                "imageReference": "IMG001",
+                "remarks": "Test Comprehensive BOM"
+            },
+            "fabricTables": [
+                {
+                    "id": 1,
+                    "name": "BOM Table 1",
+                    "items": [
+                        {
+                            "srNo": 1,
+                            "comboName": "Combo A",
+                            "lotNo": "L001",
+                            "lotCount": "10",
+                            "colour": "Navy Blue",
+                            "fabricQuality": "Cotton 100%",
+                            "orderPcs": "100",
+                            "planRat": "1.5"
+                        },
+                        {
+                            "srNo": 2,
+                            "comboName": "Combo B",
+                            "lotNo": "L002",
+                            "lotCount": "15",
+                            "colour": "White",
+                            "fabricQuality": "Cotton Blend",
+                            "orderPcs": "150",
+                            "planRat": "1.8"
+                        }
+                    ]
+                }
+            ],
+            "trimsTables": [
+                {
+                    "id": 1,
+                    "name": "Trims for BOM Table 1",
+                    "items": [
+                        {
+                            "srNo": 1,
+                            "comboName": "Combo A",
+                            "trimType": "Button",
+                            "itemName": "Metal Button",
+                            "itemCode": "BTN001",
+                            "quantity": "5",
+                            "unitPrice": "2.50"
+                        },
+                        {
+                            "srNo": 2,
+                            "comboName": "Combo B",
+                            "trimType": "Thread",
+                            "itemName": "Polyester Thread",
+                            "itemCode": "THR001",
+                            "quantity": "100",
+                            "unitPrice": "0.05"
+                        }
+                    ]
+                }
+            ],
+            "operations": [
+                {
+                    "srNo": 1,
+                    "operationName": "Cutting",
+                    "department": "Cutting",
+                    "sam": "2.5",
+                    "workers": "2",
+                    "costPerPiece": "5.00"
+                },
+                {
+                    "srNo": 2,
+                    "operationName": "Sewing",
+                    "department": "Production",
+                    "sam": "15.0",
+                    "workers": "5",
+                    "costPerPiece": "12.50"
+                },
+                {
+                    "srNo": 3,
+                    "operationName": "Finishing",
+                    "department": "Finishing",
+                    "sam": "3.0",
+                    "workers": "1",
+                    "costPerPiece": "3.75"
+                }
+            ]
+        }
+        
+        response = self.run_test(
+            "Create Comprehensive BOM",
+            "POST",
+            "boms/comprehensive",
+            200,
+            data=comprehensive_bom_data
+        )
+        
+        if response and 'bom_id' in response:
+            comprehensive_bom_id = response['bom_id']
+            self.created_ids['boms'].append(comprehensive_bom_id)
+            
+            # Verify success message
+            if 'message' in response and 'successfully' in response['message']:
+                self.log_test("Comprehensive BOM Success Message", True, response['message'])
+            else:
+                self.log_test("Comprehensive BOM Success Message", False, "Missing success message")
+            
+            return comprehensive_bom_id
+        
+        return None
+
+    def test_comprehensive_bom_retrieval(self, bom_id):
+        """Test retrieval of comprehensive BOMs"""
+        print("\n🔍 Testing Comprehensive BOM Retrieval...")
+        
+        # Get all BOMs (should include comprehensive BOMs)
+        response = self.run_test(
+            "Get All BOMs (including comprehensive)",
+            "GET",
+            "boms",
+            200
+        )
+        
+        if response and isinstance(response, list):
+            # Find our comprehensive BOM in the list
+            found_bom = None
+            for bom in response:
+                if bom.get('id') == bom_id:
+                    found_bom = bom
+                    break
+            
+            if found_bom:
+                self.log_test("Comprehensive BOM in List", True, f"Found BOM with ID: {bom_id}")
+                
+                # Verify it has the new structure fields
+                required_fields = ['fabricTables', 'trimsTables', 'operations']
+                missing_fields = []
+                
+                for field in required_fields:
+                    if field not in found_bom:
+                        missing_fields.append(field)
+                
+                if not missing_fields:
+                    self.log_test("Comprehensive BOM Structure", True, "All required fields present")
+                else:
+                    self.log_test("Comprehensive BOM Structure", False, f"Missing fields: {missing_fields}")
+                
+                # Verify status is "assigned"
+                if found_bom.get('status') == 'assigned':
+                    self.log_test("Comprehensive BOM Status", True, "Status is 'assigned'")
+                else:
+                    self.log_test("Comprehensive BOM Status", False, f"Status is '{found_bom.get('status')}'")
+                
+                return True
+            else:
+                self.log_test("Comprehensive BOM in List", False, f"BOM with ID {bom_id} not found in list")
+        else:
+            self.log_test("Get All BOMs Response", False, "Invalid response format")
+        
+        return False
+
+    def test_multiple_tables_bom(self):
+        """Test BOM creation with multiple FABRIC and TRIMS tables"""
+        print("\n🔍 Testing Multiple Tables BOM...")
+        
+        multi_table_bom_data = {
+            "header": {
+                "date": "2025-01-15",
+                "artNo": "ART002",
+                "styleNumber": "STY002",
+                "buyer": "Multi Table Fashion",
+                "planQty": "2000",
+                "setNo": "SET002",
+                "imageReference": "IMG002",
+                "remarks": "Multi-table test BOM"
+            },
+            "fabricTables": [
+                {
+                    "id": 1,
+                    "name": "Main Fabric Table",
+                    "items": [
+                        {
+                            "srNo": 1,
+                            "comboName": "Main Combo",
+                            "lotNo": "ML001",
+                            "lotCount": "20",
+                            "colour": "Black",
+                            "fabricQuality": "Premium Cotton",
+                            "orderPcs": "200",
+                            "planRat": "2.0"
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "name": "Contrast Fabric Table",
+                    "items": [
+                        {
+                            "srNo": 1,
+                            "comboName": "Contrast Combo",
+                            "lotNo": "CL001",
+                            "lotCount": "5",
+                            "colour": "Red",
+                            "fabricQuality": "Silk Blend",
+                            "orderPcs": "50",
+                            "planRat": "0.5"
+                        }
+                    ]
+                }
+            ],
+            "trimsTables": [
+                {
+                    "id": 1,
+                    "name": "Trims for Main Fabric Table",
+                    "items": [
+                        {
+                            "srNo": 1,
+                            "comboName": "Main Combo",
+                            "trimType": "Zipper",
+                            "itemName": "YKK Zipper",
+                            "itemCode": "ZIP001",
+                            "quantity": "1",
+                            "unitPrice": "15.00"
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "name": "Trims for Contrast Fabric Table",
+                    "items": [
+                        {
+                            "srNo": 1,
+                            "comboName": "Contrast Combo",
+                            "trimType": "Label",
+                            "itemName": "Brand Label",
+                            "itemCode": "LBL001",
+                            "quantity": "2",
+                            "unitPrice": "1.25"
+                        }
+                    ]
+                }
+            ],
+            "operations": [
+                {
+                    "srNo": 1,
+                    "operationName": "Pattern Making",
+                    "department": "Design",
+                    "sam": "5.0",
+                    "workers": "1",
+                    "costPerPiece": "8.00"
+                },
+                {
+                    "srNo": 2,
+                    "operationName": "Cutting",
+                    "department": "Cutting",
+                    "sam": "3.0",
+                    "workers": "3",
+                    "costPerPiece": "6.00"
+                }
+            ]
+        }
+        
+        response = self.run_test(
+            "Create Multi-Table BOM",
+            "POST",
+            "boms/comprehensive",
+            200,
+            data=multi_table_bom_data
+        )
+        
+        if response and 'bom_id' in response:
+            multi_bom_id = response['bom_id']
+            self.created_ids['boms'].append(multi_bom_id)
+            
+            # Retrieve and verify the multi-table BOM
+            all_boms_response = self.run_test(
+                "Get Multi-Table BOM",
+                "GET",
+                "boms",
+                200
+            )
+            
+            if all_boms_response and isinstance(all_boms_response, list):
+                found_multi_bom = None
+                for bom in all_boms_response:
+                    if bom.get('id') == multi_bom_id:
+                        found_multi_bom = bom
+                        break
+                
+                if found_multi_bom:
+                    # Verify multiple tables are saved correctly
+                    fabric_tables = found_multi_bom.get('fabricTables', [])
+                    trims_tables = found_multi_bom.get('trimsTables', [])
+                    
+                    if len(fabric_tables) == 2:
+                        self.log_test("Multiple Fabric Tables", True, f"Found {len(fabric_tables)} fabric tables")
+                    else:
+                        self.log_test("Multiple Fabric Tables", False, f"Expected 2, found {len(fabric_tables)}")
+                    
+                    if len(trims_tables) == 2:
+                        self.log_test("Multiple Trims Tables", True, f"Found {len(trims_tables)} trims tables")
+                    else:
+                        self.log_test("Multiple Trims Tables", False, f"Expected 2, found {len(trims_tables)}")
+                    
+                    return True
+                else:
+                    self.log_test("Multi-Table BOM Retrieval", False, "BOM not found in response")
+            
+        return False
+
     def test_mrp_creation(self):
         """Test MRP creation"""
         print("\n🔍 Testing MRP Creation...")
