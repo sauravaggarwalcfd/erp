@@ -92,6 +92,21 @@ export default function BOMManagement({ user, onLogout }) {
         <BOMCreate
           onCancel={() => setShowCreateForm(false)}
           onSave={handleSaveBOM}
+          mode="create"
+        />
+      </Layout>
+    );
+  }
+
+  if (viewMode === "view" || viewMode === "edit") {
+    return (
+      <Layout user={user} onLogout={onLogout}>
+        <BOMCreate
+          onCancel={handleCancelView}
+          onSave={handleSaveBOM}
+          onEdit={handleEditBOM}
+          mode={viewMode}
+          initialData={selectedBOM}
         />
       </Layout>
     );
