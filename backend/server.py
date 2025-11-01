@@ -552,6 +552,42 @@ async def delete_fabric(fabric_id: str, current_user: User = Depends(get_current
     return {"message": "Fabric deleted successfully"}
 
 # BOM Routes
+@api_router.post("/boms/comprehensive")
+async def create_comprehensive_bom(bom_data: dict, current_user: User = Depends(get_current_user)):
+    try:
+        # Extract header and items
+        header = {
+            "date": bom_data.get("date"),
+            "imageReference": bom_data.get("imageReference"),
+            "artNo": bom_data.get("artNo"),
+            "planQty": bom_data.get("planQty"),
+            "setNo": bom_data.get("setNo"),
+            "buyer": bom_data.get("buyer"),
+            "remarks": bom_data.get("remarks"),
+            "styleNumber": bom_data.get("styleNumber")
+        }
+        items = bom_data.get("items", [])
+        
+        # Create BOM document
+        bom_id = str(uuid.uuid4())
+        bom_doc = {
+            "id": bom_id,
+            "header": header,
+            "items": items,
+            "status": "unassigned",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_by": current_user.username
+        }
+        
+        await db.comprehensive_boms.insert_one(bom_doc)
+        
+        return {
+            "message": "BOM created successfully",
+            "bom_id": bom_id
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating BOM: {str(e)}")
+
 @api_router.post("/boms", response_model=BOM)
 async def create_bom(bom_input: BOMCreate, current_user: User = Depends(get_current_user)):
     # Get article and color names
