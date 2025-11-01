@@ -1014,6 +1014,28 @@ export default function Masters({ user, onLogout }) {
               title="Fabrics"
               description="Manage fabric master data - All 11 columns from Excel"
               columns={[
+                { 
+                  key: "serial", 
+                  label: "S.No", 
+                  render: (item, index) => index + 1 
+                },
+                { 
+                  key: "image", 
+                  label: "Image", 
+                  render: (item) => (
+                    item.image_url ? (
+                      <img 
+                        src={`${process.env.REACT_APP_BACKEND_URL}${item.image_url}`}
+                        alt="Fabric"
+                        className="w-12 h-12 object-cover rounded border"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-slate-200 rounded border flex items-center justify-center text-xs text-slate-500">
+                        No Image
+                      </div>
+                    )
+                  )
+                },
                 { key: "item_type", label: "Item Type" },
                 { key: "count_const", label: "Count/Const" },
                 { key: "fabric_name", label: "Fabric Name" },
