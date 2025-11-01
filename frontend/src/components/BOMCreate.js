@@ -414,6 +414,8 @@ export default function BOMCreate({ onCancel, onSave, onEdit, mode = "create", i
     onSave(bomData);
   };
 
+  const isReadOnly = mode === "view";
+
   return (
     <div className="space-y-6">
       {/* Header Section - Common for all tabs */}
