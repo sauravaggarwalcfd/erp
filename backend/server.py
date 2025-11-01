@@ -633,6 +633,134 @@ async def delete_mrp(mrp_id: str, current_user: User = Depends(get_current_user)
     await db.mrps.delete_one({"id": mrp_id})
     return {"message": "MRP deleted successfully"}
 
+# Excel Upload Route
+@api_router.post("/upload-excel")
+async def upload_excel(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
+    if not file.filename.endswith(('.xlsx', '.xls')):
+        raise HTTPException(status_code=400, detail="File must be an Excel file (.xlsx or .xls)")
+    
+    try:
+        contents = await file.read()
+        workbook = openpyxl.load_workbook(io.BytesIO(contents))
+        
+        results = {
+            "colors_added": 0,
+            "articles_added": 0,
+            "sizes_added": 0,
+            "raw_materials_added": 0,
+            "errors": []
+        }
+        
+        # Process Color ID sheet
+        if "Color ID" in workbook.sheetnames:
+            sheet = workbook["Color ID"]
+            for row_idx, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
+                try:
+                    if row[0] and row[1]:
+                        color_data = row[1].split("/")
+                        if len(color_data) >= 2:
+                            color_id = color_data[0].strip()
+                            color_name = color_data[1].strip()
+                            
+                            # Check if color already exists
+                            existing = await db.colors.find_one({"code": color_id})
+                            if not existing:
+                                color_obj = Color(
+                                    name=color_name,
+                                    code=color_id,
+                                    hex_value=None
+                                )
+                                doc = color_obj.model_dump()
+                                doc['created_at'] = doc['created_at'].isoformat()
+                                await db.colors.insert_one(doc)
+                                results["colors_added"] += 1
+                except Exception as e:
+                    results["errors"].append(f"Color sheet row {row_idx}: {str(e)}")
+        
+        # Process Art No. sheet
+        if "Art No." in workbook.sheetnames:
+            sheet = workbook["Art No."]
+            for row_idx, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
+                try:
+                    if row[0]:
+                        article_code = str(row[0]).strip()
+                        
+                        # Check if article already exists
+                        existing = await db.articles.find_one({"code": article_code})
+                        if not existing:
+                            article_obj = Article(
+                                name=article_code,
+                                code=article_code,
+                                description=f"Article {article_code}",
+                                buyer_id=None
+                            )
+                            doc = article_obj.model_dump()
+                            doc['created_at'] = doc['created_at'].isoformat()
+                            await db.articles.insert_one(doc)
+                            results["articles_added"] += 1
+                except Exception as e:
+                    results["errors"].append(f"Article sheet row {row_idx}: {str(e)}")
+        
+        # Process Units Master sheet
+        if "Units Master" in workbook.sheetnames:
+            sheet = workbook["Units Master"]
+            sort_order = 1
+            for row_idx, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
+                try:
+                    if row[0]:
+                        unit_name = str(row[0]).strip()
+                        
+                        # Check if size already exists
+                        existing = await db.sizes.find_one({"code": unit_name})
+                        if not existing:
+                            size_obj = Size(
+                                name=unit_name,
+                                code=unit_name,
+                                sort_order=sort_order
+                            )
+                            doc = size_obj.model_dump()
+                            doc['created_at'] = doc['created_at'].isoformat()
+                            await db.sizes.insert_one(doc)
+                            results["sizes_added"] += 1
+                            sort_order += 1
+                except Exception as e:
+                    results["errors"].append(f"Units sheet row {row_idx}: {str(e)}")
+        
+        # Process Components sheet (as Raw Materials)
+        if "Components" in workbook.sheetnames:
+            sheet = workbook["Components"]
+            for row_idx, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
+                try:
+                    if row[0]:
+                        component_name = str(row[0]).strip()
+                        component_code = component_name[:20].upper().replace(" ", "_")
+                        
+                        # Check if material already exists
+                        existing = await db.raw_materials.find_one({"code": component_code})
+                        if not existing:
+                            material_obj = RawMaterial(
+                                name=component_name,
+                                code=component_code,
+                                material_type="accessories",
+                                unit="pieces",
+                                cost_per_unit=0.0,
+                                supplier_id=None
+                            )
+                            doc = material_obj.model_dump()
+                            doc['created_at'] = doc['created_at'].isoformat()
+                            await db.raw_materials.insert_one(doc)
+                            results["raw_materials_added"] += 1
+                except Exception as e:
+                    results["errors"].append(f"Components sheet row {row_idx}: {str(e)}")
+        
+        return {
+            "message": "Excel file processed successfully",
+            "results": results
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing Excel file: {str(e)}")
+
 # Include router
 app.include_router(api_router)
 
