@@ -29,29 +29,35 @@ export default function BOMCreate({ onCancel, onSave }) {
     styleNumber: ""
   });
 
-  // BOM Items
-  const [bomItems, setBomItems] = useState([
+  // Multiple BOM tables
+  const [bomTables, setBomTables] = useState([
     {
-      srNo: 1,
-      comboName: "",
-      lotNo: "",
-      lotCount: "",
-      colourId: "",
-      colourCode: "",
-      colour: "",
-      fabricQuality: "",
-      fcNo: "",
-      planRat: "",
-      gsm: "",
-      priority: "",
-      component: "",
-      avgUnit: "kg",
-      orderPcs: "",
-      extraPcs: "",
-      wastagePcs: "",
-      readyFabricNeed: "",
-      shortage: "",
-      greigeFabricNeed: ""
+      id: 1,
+      name: "BOM Table 1",
+      items: [
+        {
+          srNo: 1,
+          comboName: "",
+          lotNo: "",
+          lotCount: "",
+          colourId: "",
+          colourCode: "",
+          colour: "",
+          fabricQuality: "",
+          fcNo: "",
+          planRat: "",
+          gsm: "",
+          priority: "",
+          component: "",
+          avgUnit: "kg",
+          orderPcs: "",
+          extraPcs: "",
+          wastagePcs: "",
+          readyFabricNeed: "",
+          shortage: "",
+          greigeFabricNeed: ""
+        }
+      ]
     }
   ]);
 
