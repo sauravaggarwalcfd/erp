@@ -7,6 +7,7 @@ import Dashboard from "@/components/Dashboard";
 import Masters from "@/components/Masters";
 import BOMManagement from "@/components/BOMManagement";
 import MRPManagement from "@/components/MRPManagement";
+import BOMLayoutOptions from "@/components/BOMLayoutOptions";
 import { Toaster } from "@/components/ui/sonner";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
