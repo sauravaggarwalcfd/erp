@@ -566,7 +566,7 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser, isSubmitting
         {/* Attachments */}
         <div className="mb-6 border-t pt-6">
           <h3 className="font-semibold text-gray-700 mb-4 flex items-center">
-            <span className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-xs mr-2">5</span>
+            <span className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-xs mr-2">6</span>
             Attachments ({formData.initial_attachments.length})
           </h3>
           
