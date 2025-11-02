@@ -16,6 +16,7 @@ import Quality from './pages/Quality';
 import Employees from './pages/Employees';
 import Analytics from './pages/Analytics';
 import Tasks from './pages/Tasks';
+import TasksEnhanced from './pages/TasksEnhanced';
 import Suppliers from './pages/Suppliers';
 
 const Layout = ({ children }) => {
