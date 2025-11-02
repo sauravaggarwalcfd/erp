@@ -48,7 +48,7 @@ const TasksEnhanced = () => {
   const [attachmentName, setAttachmentName] = useState('');
 
   const departments = ['cutting', 'stitching', 'finishing', 'qc', 'packaging', 'admin'];
-  const currentUser = { id: 'user-1', name: 'Factory Manager' }; // Mock user
+  const currentUser = { id: '1202fa63-f5e0-430d-9d17-f59ee91ec49f', name: 'John Smith' }; // Use actual worker ID
 
   useEffect(() => {
     fetchTasks();
