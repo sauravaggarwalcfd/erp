@@ -16,6 +16,9 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser, isSubmitting
     specific_dates: [],
     reminder_enabled: false,
     reminder_before_hours: 24,
+    notify_users: [],
+    notify_groups: [],
+    send_notifications: true,
     initial_attachments: []
   });
 
