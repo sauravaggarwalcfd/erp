@@ -562,7 +562,63 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser }) => {
                           )}
                         </div>
                       </div>
-                    </div>\n                    <button\n                      type=\"button\"\n                      onClick={() => handleRemoveAttachment(idx)}\n                      className=\"text-red-600 hover:text-red-800 p-1\"\n                      title=\"Remove attachment\"\n                    >\n                      🗑️\n                    </button>\n                  </div>\n                ))}\n              </div>\n            </div>\n          )}\n        </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveAttachment(idx)}
+                      className="text-red-600 hover:text-red-800 p-1"
+                      title="Remove attachment"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Attached Files Preview */}
+          {formData.initial_attachments.length > 0 && (
+            <div className="mt-4 space-y-3">
+              <h4 className="font-medium text-gray-700">📎 Attached Files ({formData.initial_attachments.length})</h4>
+              {formData.initial_attachments.map((att, idx) => (
+                <div key={idx} className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg">
+                  {/* File Preview */}
+                  {att.file_type === 'image' && att.file_url ? (
+                    <img 
+                      src={att.file_url} 
+                      alt={att.file_name}
+                      className="w-12 h-12 object-cover rounded-lg border"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl">
+                      {getFileIcon(att.file_type)}
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-800">{att.file_name}</p>
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <span className="capitalize">{att.file_type}</span>
+                      {att.file_size && <span>• {formatFileSize(att.file_size)}</span>}
+                      {att.original_file ? (
+                        <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full">📱 Device</span>
+                      ) : (
+                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">🔗 Link</span>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveAttachment(idx)}
+                    className="text-red-600 hover:text-red-800"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Action Buttons */}
         <div className="flex gap-3 pt-6 border-t">
