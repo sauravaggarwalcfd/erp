@@ -83,16 +83,7 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser, isSubmitting
             original_file: true
           };
 
-          // Warn about large Base64 size but allow it
-          if (e.target.result.length > 2000000) { // ~2MB as Base64
-            console.warn(`Large file detected: ${file.name} (${e.target.result.length} chars as Base64)`);
-            // Show warning but continue
-            setTimeout(() => {
-              alert(`📁 Large file "${file.name}" attached. Saving may take a moment...`);
-            }, 100);
-          }
-
-          console.log(`File processed successfully: ${file.name}`);
+          console.log(`File processed successfully: ${file.name} (${formatFileSize(file.size)})`);
           setFormData(prev => ({
             ...prev,
             initial_attachments: [...prev.initial_attachments, fileData]
