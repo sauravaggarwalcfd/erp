@@ -17,7 +17,7 @@ const Groups = () => {
     department: '',
     selectedMembers: []
   });
-  const currentUser = { id: 'user-1', name: 'Factory Manager' };
+  const currentUser = { id: '1202fa63-f5e0-430d-9d17-f59ee91ec49f', name: 'John Smith' }; // Use actual worker ID
   
   const departments = ['cutting', 'stitching', 'finishing', 'qc', 'packaging', 'admin'];
 
