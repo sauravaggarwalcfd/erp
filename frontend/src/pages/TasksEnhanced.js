@@ -313,103 +313,12 @@ const TasksEnhanced = () => {
 
       {/* Create Task Form */}
       {showForm && (
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Create New Task</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Task Title *</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
-                <textarea
-                  rows="3"
-                  required
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Assign To *</label>
-                <select
-                  required
-                  value={formData.assigned_to}
-                  onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                >
-                  <option value="">Select Worker</option>
-                  {workers.map(worker => (
-                    <option key={worker.id} value={worker.id}>
-                      {worker.name} - {worker.department}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Department *</label>
-                <select
-                  required
-                  value={formData.department}
-                  onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                >
-                  {departments.map(dept => (
-                    <option key={dept} value={dept}>{dept.toUpperCase()}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Priority *</label>
-                <select
-                  required
-                  value={formData.priority}
-                  onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                  <option value="urgent">Urgent</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
-                <input
-                  type="date"
-                  value={formData.due_date}
-                  onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Hours</label>
-                <input
-                  type="number"
-                  step="0.5"
-                  value={formData.estimated_hours}
-                  onChange={(e) => setFormData({ ...formData, estimated_hours: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                  placeholder="e.g., 2.5"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition"
-            >
-              Create Task
-            </button>
-          </form>
-        </div>
+        <TaskCreateForm 
+          workers={workers}
+          onSubmit={handleSubmit}
+          onCancel={() => setShowForm(false)}
+          currentUser={currentUser}
+        />
       )}
 
       {/* Tasks List */}
