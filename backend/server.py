@@ -336,6 +336,20 @@ def deserialize_doc(doc):
     return doc
 
 
+# Helper function to log task activities
+async def log_activity(task_id: str, user_id: str, user_name: str, action: str, details: str):
+    activity = ActivityLog(
+        task_id=task_id,
+        user_id=user_id,
+        user_name=user_name,
+        action=action,
+        details=details
+    )
+    doc = activity.model_dump()
+    doc = serialize_doc(doc)
+    await db.activity_logs.insert_one(doc)
+
+
 # ==================== ROUTES ====================
 
 @api_router.get("/")
