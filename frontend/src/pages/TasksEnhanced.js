@@ -241,6 +241,26 @@ const TasksEnhanced = () => {
     return worker ? worker.name : 'Unknown';
   };
 
+  const getFrequencyIcon = (frequency) => {
+    const icons = {
+      once: '⏱️',
+      daily: '📅',
+      weekly: '📆',
+      monthly: '🗓️',
+      specific_dates: '📌'
+    };
+    return icons[frequency] || '⏱️';
+  };
+
+  const getFrequencyLabel = (task) => {
+    if (task.frequency === 'once') return 'One-time';
+    if (task.frequency === 'daily') return 'Daily';
+    if (task.frequency === 'weekly') return `Weekly (${task.recurrence_pattern})`;
+    if (task.frequency === 'monthly') return `Monthly (${task.recurrence_pattern}th)`;
+    if (task.frequency === 'specific_dates') return `${task.specific_dates?.length || 0} dates`;
+    return 'One-time';
+  };
+
   const getStatusBadge = (status) => {
     const badges = {
       pending: 'px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium',
