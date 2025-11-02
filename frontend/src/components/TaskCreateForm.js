@@ -467,7 +467,7 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser, isSubmitting
           {/* File Upload Input */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Upload Files (Max 10MB each)
+              Upload Files (Max 2MB for images, 10MB for others)
             </label>
             <input
               type="file"
@@ -477,7 +477,7 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser, isSubmitting
               accept="image/*,audio/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
             />
             <p className="text-xs text-gray-500 mt-1">
-              Supported: Images, Audio, Video, PDF, Documents
+              Supported: Images (max 2MB), Audio, Video, PDF, Documents (max 10MB)
             </p>
           </div>
 
