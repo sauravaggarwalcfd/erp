@@ -69,6 +69,56 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser }) => {
     }
   };
 
+  const handleFileUpload = (event) => {
+    const files = Array.from(event.target.files);
+    
+    files.forEach(file => {
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        alert(`File ${file.name} is too large. Maximum size is 10MB.`);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const fileData = {
+          file_name: file.name,
+          file_url: e.target.result, // Base64 data URL
+          file_type: getFileTypeFromName(file.name),
+          uploaded_by: currentUser.name,
+          file_size: file.size,
+          original_file: true
+        };
+
+        setFormData(prev => ({
+          ...prev,
+          initial_attachments: [...prev.initial_attachments, fileData]
+        }));
+      };
+      
+      reader.readAsDataURL(file);
+    });
+
+    // Reset file input
+    event.target.value = '';
+  };
+
+  const getFileTypeFromName = (fileName) => {
+    const ext = fileName.split('.').pop().toLowerCase();
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) return 'image';
+    if (['mp3', 'wav', 'aac', 'ogg'].includes(ext)) return 'audio';
+    if (['mp4', 'avi', 'mov', 'wmv'].includes(ext)) return 'video';
+    if (['pdf'].includes(ext)) return 'pdf';
+    if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(ext)) return 'document';
+    return 'document';
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  };
+
   const handleRemoveAttachment = (index) => {
     setFormData({
       ...formData,
