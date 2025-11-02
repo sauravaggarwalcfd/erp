@@ -359,10 +359,15 @@ const TasksEnhanced = () => {
                     <span className={getStatusBadge(task.status)}>{task.status.replace('_', ' ')}</span>
                   </div>
                   <p className="text-sm text-gray-600 mb-2 line-clamp-2">{task.description}</p>
-                  <div className="flex gap-4 text-xs text-gray-500">
+                  <div className="flex gap-4 text-xs text-gray-500 flex-wrap">
                     <span>👤 {getWorkerName(task.assigned_to)}</span>
                     <span>🏭 {task.department.toUpperCase()}</span>
                     {task.due_date && <span>📅 {task.due_date}</span>}
+                    <span className="flex items-center gap-1">
+                      {getFrequencyIcon(task.frequency)}
+                      <span>{getFrequencyLabel(task)}</span>
+                    </span>
+                    {task.reminder_enabled && <span>🔔 Reminder ON</span>}
                   </div>
                   {task.tags && task.tags.length > 0 && (
                     <div className="flex gap-1 mt-2 flex-wrap">
