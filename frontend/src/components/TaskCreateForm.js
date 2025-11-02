@@ -441,7 +441,34 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser }) => {
             Attachments ({formData.initial_attachments.length})
           </h3>
           
+          {/* File Upload from Device */}
+          <div className="bg-blue-50 border-2 border-dashed border-blue-300 rounded-lg p-6 mb-4 text-center">
+            <div className="text-4xl mb-2">📁</div>
+            <h4 className="font-medium text-gray-800 mb-2">Upload Files from Your Device</h4>
+            <p className="text-sm text-gray-600 mb-4">
+              Drag & drop files here or click to browse<br/>
+              <span className="text-xs">Supports: Images, Audio, Video, Documents (Max 10MB each)</span>
+            </p>
+            <label className="cursor-pointer">
+              <input
+                type="file"
+                multiple
+                onChange={handleFileUpload}
+                className="hidden"
+                accept="image/*,audio/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+              />
+              <span className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition shadow-sm">
+                🗂️ Browse Files from Device
+              </span>
+            </label>
+          </div>
+
+          {/* Manual URL/Link Entry */}
           <div className="bg-gray-50 p-4 rounded-lg mb-3">
+            <h4 className="font-medium text-gray-700 mb-3 flex items-center">
+              <span className="text-lg mr-2">🔗</span>
+              Or Add Links Manually
+            </h4>
             <div className="grid grid-cols-3 gap-3 mb-3">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">File Type</label>
@@ -484,26 +511,36 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser }) => {
               onClick={handleAddAttachment}
               className="w-full px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
             >
-              ➕ Add Attachment
+              ➕ Add Link
             </button>
           </div>
 
           {/* Attachment List */}
           {formData.initial_attachments.length > 0 && (
             <div className="space-y-2">
+              <h4 className="font-medium text-gray-700 mb-2">📎 Attached Files ({formData.initial_attachments.length})</h4>
               {formData.initial_attachments.map((att, idx) => (
-                <div key={idx} className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg">
+                <div key={idx} className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg shadow-sm">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{getFileIcon(att.file_type)}</span>
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm font-medium text-gray-800">{att.file_name}</p>
-                      <p className="text-xs text-gray-500">{att.file_type} • {att.file_url.substring(0, 40)}...</p>
+                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <span className="capitalize">{att.file_type}</span>
+                        {att.file_size && <span>• {formatFileSize(att.file_size)}</span>}
+                        {att.original_file ? (
+                          <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full">📱 Device Upload</span>
+                        ) : (
+                          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">🔗 Link</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <button
                     type="button"
                     onClick={() => handleRemoveAttachment(idx)}
-                    className="text-red-600 hover:text-red-800"
+                    className="text-red-600 hover:text-red-800 p-1"
+                    title="Remove attachment"
                   >
                     🗑️
                   </button>
