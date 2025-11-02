@@ -469,12 +469,12 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser, isSubmitting
           {/* File Upload Input */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Upload Files (Max 2MB for images, 10MB for others)
+              Upload Files (Max 6MB per file)
             </label>
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
-              <p className="text-xs text-yellow-800 flex items-center gap-2">
-                <span>⚠️</span>
-                <span><strong>Important:</strong> Large images may cause saving issues. For best results, compress images before uploading or use images under 1MB.</span>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+              <p className="text-xs text-blue-800 flex items-center gap-2">
+                <span>ℹ️</span>
+                <span><strong>Tip:</strong> You can now upload files up to 6MB. Large files may take a moment to process and save.</span>
               </p>
             </div>
             <input
@@ -485,7 +485,7 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser, isSubmitting
               accept="image/*,audio/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
             />
             <p className="text-xs text-gray-500 mt-1">
-              Supported: Images (max 2MB), Audio, Video, PDF, Documents (max 10MB)
+              Supported: Images, Audio, Video, PDF, Documents (max 6MB each)
             </p>
           </div>
 
