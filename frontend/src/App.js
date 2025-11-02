@@ -91,6 +91,9 @@ function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/modern" element={<DashboardModern />} />
+            <Route path="/minimal" element={<DashboardMinimal />} />
+            <Route path="/dark" element={<DashboardDark />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/production" element={<Production />} />
             <Route path="/inventory" element={<Inventory />} />
