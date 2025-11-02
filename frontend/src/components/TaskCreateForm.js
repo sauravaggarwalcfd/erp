@@ -518,7 +518,21 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser }) => {
               <div className="space-y-2 max-h-48 overflow-y-auto">
                 {formData.initial_attachments.map((att, idx) => (
                   <div key={idx} className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg">
-                    <div className=\"flex items-center gap-3\">\n                      <span className=\"text-xl\">{getFileIcon(att.file_type)}</span>\n                      <div>\n                        <p className=\"text-sm font-medium text-gray-800\">{att.file_name}</p>\n                        <div className=\"flex items-center gap-2 text-xs text-gray-500\">\n                          <span className=\"capitalize\">{att.file_type}</span>\n                          {att.file_size && <span>• {formatFileSize(att.file_size)}</span>}\n                          {att.original_file ? (\n                            <span className=\"px-2 py-0.5 bg-green-100 text-green-700 rounded-full\">📱 Device</span>\n                          ) : (\n                            <span className=\"px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full\">🔗 Link</span>\n                          )}\n                        </div>\n                      </div>\n                    </div>\n                    <button\n                      type=\"button\"\n                      onClick={() => handleRemoveAttachment(idx)}\n                      className=\"text-red-600 hover:text-red-800 p-1\"\n                      title=\"Remove attachment\"\n                    >\n                      🗑️\n                    </button>\n                  </div>\n                ))}\n              </div>\n            </div>\n          )}\n        </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">{getFileIcon(att.file_type)}</span>
+                      <div>
+                        <p className="text-sm font-medium text-gray-800">{att.file_name}</p>
+                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                          <span className="capitalize">{att.file_type}</span>
+                          {att.file_size && <span>• {formatFileSize(att.file_size)}</span>}
+                          {att.original_file ? (
+                            <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full">📱 Device</span>
+                          ) : (
+                            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">🔗 Link</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>\n                    <button\n                      type=\"button\"\n                      onClick={() => handleRemoveAttachment(idx)}\n                      className=\"text-red-600 hover:text-red-800 p-1\"\n                      title=\"Remove attachment\"\n                    >\n                      🗑️\n                    </button>\n                  </div>\n                ))}\n              </div>\n            </div>\n          )}\n        </div>
 
         {/* Action Buttons */}
         <div className="flex gap-3 pt-6 border-t">
