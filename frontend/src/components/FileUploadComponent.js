@@ -40,4 +40,216 @@ const FileUploadComponent = ({ onFilesUploaded, currentUser, existingAttachments
       if (!isValidFileType(file)) {
         alert('File "' + file.name + '" type is not supported.');
         return;
-      }\n\n      setUploadProgress(prev => ({ ...prev, [file.name]: 0 }));\n\n      const reader = new FileReader();\n      reader.onprogress = (e) => {\n        if (e.lengthComputable) {\n          const progress = (e.loaded / e.total) * 100;\n          setUploadProgress(prev => ({ ...prev, [file.name]: progress }));\n        }\n      };\n\n      reader.onload = (e) => {\n        const fileData = {\n          file_name: file.name,\n          file_url: e.target.result, // Base64 data URL\n          file_type: getFileTypeFromFile(file),\n          uploaded_by: currentUser.name,\n          file_size: file.size,\n          original_file: true,\n          mime_type: file.type\n        };\n\n        onFilesUploaded([fileData]);\n        \n        // Remove from progress tracking\n        setUploadProgress(prev => {\n          const newProgress = { ...prev };\n          delete newProgress[file.name];\n          return newProgress;\n        });\n      };\n      \n      reader.readAsDataURL(file);\n    });\n  };\n\n  const isValidFileType = (file) => {\n    const validTypes = [\n      // Images\n      'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',\n      // Audio\n      'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/aac',\n      // Video\n      'video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/quicktime',\n      // Documents\n      'application/pdf',\n      'application/msword',\n      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',\n      'application/vnd.ms-excel',\n      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',\n      'application/vnd.ms-powerpoint',\n      'application/vnd.openxmlformats-officedocument.presentationml.presentation',\n      'text/plain'\n    ];\n    \n    return validTypes.includes(file.type) || file.name.match(/\\.(jpe?g|png|gif|webp|mp3|wav|ogg|aac|mp4|avi|mov|wmv|pdf|docx?|xlsx?|pptx?|txt)$/i);\n  };\n\n  const getFileTypeFromFile = (file) => {\n    if (file.type.startsWith('image/')) return 'image';\n    if (file.type.startsWith('audio/')) return 'audio';\n    if (file.type.startsWith('video/')) return 'video';\n    if (file.type === 'application/pdf') return 'pdf';\n    if (\n      file.type.includes('word') || \n      file.type.includes('excel') || \n      file.type.includes('powerpoint') ||\n      file.type.includes('spreadsheet') ||\n      file.name.match(/\\.(docx?|xlsx?|pptx?)$/i)\n    ) return 'document';\n    return 'document';\n  };\n\n  const getFileIcon = (fileType) => {\n    const icons = {\n      image: '🖼️',\n      audio: '🎵',\n      video: '🎬',\n      document: '📄',\n      pdf: '📕',\n      link: '🔗'\n    };\n    return icons[fileType] || '📎';\n  };\n\n  const formatFileSize = (bytes) => {\n    if (!bytes) return '';\n    if (bytes < 1024) return bytes + ' B';\n    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';\n    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';\n  };\n\n  return (\n    <div>\n      {/* Drag & Drop Zone */}\n      <div \n        className={`border-2 border-dashed rounded-xl p-8 mb-4 transition-all ${\n          isDragOver \n            ? 'border-blue-400 bg-blue-50 scale-105' \n            : 'border-gray-300 bg-gray-50 hover:border-gray-400'\n        }`}\n        onDragOver={handleDragOver}\n        onDragLeave={handleDragLeave}\n        onDrop={handleDrop}\n      >\n        <div className=\"text-center\">\n          <div className=\"text-6xl mb-4\">\n            {isDragOver ? '📤' : '📁'}\n          </div>\n          <h3 className=\"text-lg font-medium text-gray-800 mb-2\">\n            {isDragOver ? 'Drop files here!' : 'Upload Files from Your Device'}\n          </h3>\n          <p className=\"text-sm text-gray-600 mb-4\">\n            Drag & drop files here or click to browse<br/>\n            <span className=\"text-xs font-medium text-blue-600\">\n              📱 Images • 🎵 Audio • 🎬 Video • 📄 Documents • 📕 PDFs (Max 10MB each)\n            </span>\n          </p>\n          \n          <label className=\"cursor-pointer\">\n            <input\n              type=\"file\"\n              multiple\n              onChange={handleFileInput}\n              className=\"hidden\"\n              accept=\"image/*,audio/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt\"\n            />\n            <span className=\"inline-block px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-medium transition shadow-lg transform hover:scale-105\">\n              🗂️ Browse Files from Device\n            </span>\n          </label>\n        </div>\n      </div>\n\n      {/* Upload Progress */}\n      {Object.keys(uploadProgress).length > 0 && (\n        <div className=\"mb-4 space-y-2\">\n          <h4 className=\"font-medium text-gray-700\">Uploading Files...</h4>\n          {Object.entries(uploadProgress).map(([fileName, progress]) => (\n            <div key={fileName} className=\"bg-white border border-gray-200 rounded-lg p-3\">\n              <div className=\"flex justify-between items-center mb-2\">\n                <span className=\"text-sm text-gray-700\">{fileName}</span>\n                <span className=\"text-xs text-gray-500\">{Math.round(progress)}%</span>\n              </div>\n              <div className=\"w-full bg-gray-200 rounded-full h-2\">\n                <div \n                  className=\"bg-blue-600 h-2 rounded-full transition-all\"\n                  style={{ width: `${progress}%` }}\n                />\n              </div>\n            </div>\n          ))}\n        </div>\n      )}\n\n      {/* File Preview */}\n      {existingAttachments.length > 0 && (\n        <div className=\"space-y-3\">\n          <h4 className=\"font-medium text-gray-700\">📎 Attached Files ({existingAttachments.length})</h4>\n          {existingAttachments.map((file, idx) => (\n            <div key={idx} className=\"bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition\">\n              <div className=\"flex items-start gap-4\">\n                {/* File Preview */}\n                <div className=\"flex-shrink-0\">\n                  {file.file_type === 'image' && file.file_url.startsWith('data:') ? (\n                    <img \n                      src={file.file_url} \n                      alt={file.file_name}\n                      className=\"w-16 h-16 object-cover rounded-lg border\"\n                    />\n                  ) : (\n                    <div className=\"w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-2xl\">\n                      {getFileIcon(file.file_type)}\n                    </div>\n                  )}\n                </div>\n                \n                {/* File Info */}\n                <div className=\"flex-1\">\n                  <h5 className=\"font-medium text-gray-800 mb-1\">{file.file_name}</h5>\n                  <div className=\"flex items-center gap-3 text-xs text-gray-500 mb-2\">\n                    <span className=\"capitalize font-medium\">{file.file_type}</span>\n                    {file.file_size && (\n                      <span>📊 {formatFileSize(file.file_size)}</span>\n                    )}\n                    {file.original_file ? (\n                      <span className=\"px-2 py-1 bg-green-100 text-green-700 rounded-full font-medium\">📱 Uploaded</span>\n                    ) : (\n                      <span className=\"px-2 py-1 bg-blue-100 text-blue-700 rounded-full font-medium\">🔗 Link</span>\n                    )}\n                  </div>\n                  {file.file_url && !file.file_url.startsWith('data:') && (\n                    <a \n                      href={file.file_url} \n                      target=\"_blank\" \n                      rel=\"noopener noreferrer\"\n                      className=\"text-xs text-blue-600 hover:underline\"\n                    >\n                      🔗 View Original\n                    </a>\n                  )}\n                </div>\n              </div>\n            </div>\n          ))}\n        </div>\n      )}\n    </div>\n  );\n};\n\nexport default FileUploadComponent;\n
+      }
+
+      setUploadProgress(prev => ({ ...prev, [file.name]: 0 }));
+
+      const reader = new FileReader();
+      reader.onprogress = (e) => {
+        if (e.lengthComputable) {
+          const progress = (e.loaded / e.total) * 100;
+          setUploadProgress(prev => ({ ...prev, [file.name]: progress }));
+        }
+      };
+
+      reader.onload = (e) => {
+        const fileData = {
+          file_name: file.name,
+          file_url: e.target.result, // Base64 data URL
+          file_type: getFileTypeFromFile(file),
+          uploaded_by: currentUser.name,
+          file_size: file.size,
+          original_file: true,
+          mime_type: file.type
+        };
+
+        onFilesUploaded([fileData]);
+        
+        // Remove from progress tracking
+        setUploadProgress(prev => {
+          const newProgress = { ...prev };
+          delete newProgress[file.name];
+          return newProgress;
+        });
+      };
+      
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const isValidFileType = (file) => {
+    const validTypes = [
+      // Images
+      'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+      // Audio
+      'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/aac',
+      // Video
+      'video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/quicktime',
+      // Documents
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'text/plain'
+    ];
+    
+    return validTypes.includes(file.type) || file.name.match(/\.(jpe?g|png|gif|webp|mp3|wav|ogg|aac|mp4|avi|mov|wmv|pdf|docx?|xlsx?|pptx?|txt)$/i);
+  };
+
+  const getFileTypeFromFile = (file) => {
+    if (file.type.startsWith('image/')) return 'image';
+    if (file.type.startsWith('audio/')) return 'audio';
+    if (file.type.startsWith('video/')) return 'video';
+    if (file.type === 'application/pdf') return 'pdf';
+    if (
+      file.type.includes('word') || 
+      file.type.includes('excel') || 
+      file.type.includes('powerpoint') ||
+      file.type.includes('spreadsheet') ||
+      file.name.match(/\.(docx?|xlsx?|pptx?)$/i)
+    ) return 'document';
+    return 'document';
+  };
+
+  const getFileIcon = (fileType) => {
+    const icons = {
+      image: '🖼️',
+      audio: '🎵',
+      video: '🎬',
+      document: '📄',
+      pdf: '📕',
+      link: '🔗'
+    };
+    return icons[fileType] || '📎';
+  };
+
+  const formatFileSize = (bytes) => {
+    if (!bytes) return '';
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  };
+
+  return (
+    <div>
+      {/* Drag & Drop Zone */}
+      <div 
+        className={`border-2 border-dashed rounded-xl p-8 mb-4 transition-all ${
+          isDragOver 
+            ? 'border-blue-400 bg-blue-50 scale-105' 
+            : 'border-gray-300 bg-gray-50 hover:border-gray-400'
+        }`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        <div className="text-center">
+          <div className="text-6xl mb-4">
+            {isDragOver ? '📤' : '📁'}
+          </div>
+          <h3 className="text-lg font-medium text-gray-800 mb-2">
+            {isDragOver ? 'Drop files here!' : 'Upload Files from Your Device'}
+          </h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Drag & drop files here or click to browse<br/>
+            <span className="text-xs font-medium text-blue-600">
+              📱 Images • 🎵 Audio • 🎬 Video • 📄 Documents • 📕 PDFs (Max 10MB each)
+            </span>
+          </p>
+          
+          <label className="cursor-pointer">
+            <input
+              type="file"
+              multiple
+              onChange={handleFileInput}
+              className="hidden"
+              accept="image/*,audio/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt"
+            />
+            <span className="inline-block px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-medium transition shadow-lg transform hover:scale-105">
+              🗂️ Browse Files from Device
+            </span>
+          </label>
+        </div>
+      </div>
+
+      {/* Upload Progress */}
+      {Object.keys(uploadProgress).length > 0 && (
+        <div className="mb-4 space-y-2">
+          <h4 className="font-medium text-gray-700">Uploading Files...</h4>
+          {Object.entries(uploadProgress).map(([fileName, progress]) => (
+            <div key={fileName} className="bg-white border border-gray-200 rounded-lg p-3">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm text-gray-700">{fileName}</span>
+                <span className="text-xs text-gray-500">{Math.round(progress)}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* File Preview */}
+      {existingAttachments.length > 0 && (
+        <div className="space-y-3">
+          <h4 className="font-medium text-gray-700">📎 Attached Files ({existingAttachments.length})</h4>
+          {existingAttachments.map((file, idx) => (
+            <div key={idx} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition">
+              <div className="flex items-start gap-4">
+                {/* File Preview */}
+                <div className="flex-shrink-0">
+                  {file.file_type === 'image' && file.file_url.startsWith('data:') ? (
+                    <img 
+                      src={file.file_url} 
+                      alt={file.file_name}
+                      className="w-16 h-16 object-cover rounded-lg border"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-2xl">
+                      {getFileIcon(file.file_type)}
+                    </div>
+                  )}
+                </div>
+                
+                {/* File Info */}
+                <div className="flex-1">
+                  <h5 className="font-medium text-gray-800 mb-1">{file.file_name}</h5>
+                  <div className="flex items-center gap-3 text-xs text-gray-500 mb-2">
+                    <span className="capitalize font-medium">{file.file_type}</span>
+                    {file.file_size && (
+                      <span>📊 {formatFileSize(file.file_size)}</span>
+                    )}
+                    {file.original_file ? (
+                      <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full font-medium">📱 Uploaded</span>
+                    ) : (
+                      <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">🔗 Link</span>
+                    )}
+                  </div>
+                  {file.file_url && !file.file_url.startsWith('data:') && (
+                    <a 
+                      href={file.file_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-xs text-blue-600 hover:underline"
+                    >
+                      🔗 View Original
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default FileUploadComponent;\n
