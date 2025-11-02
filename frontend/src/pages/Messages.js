@@ -12,7 +12,7 @@ const Messages = () => {
   const [workers, setWorkers] = useState([]);
   const [showNewConversation, setShowNewConversation] = useState(false);
   const [selectedWorker, setSelectedWorker] = useState('');
-  const currentUser = { id: 'user-1', name: 'Factory Manager' }; // Mock current user
+  const currentUser = { id: '1202fa63-f5e0-430d-9d17-f59ee91ec49f', name: 'John Smith' }; // Use actual worker ID
 
   useEffect(() => {
     fetchWorkers();
