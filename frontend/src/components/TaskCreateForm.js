@@ -441,11 +441,22 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser }) => {
             Attachments ({formData.initial_attachments.length})
           </h3>
           
-          <FileUploadComponent 
-            onFilesUploaded={handleFilesUploaded}
-            currentUser={currentUser}
-            existingAttachments={formData.initial_attachments}
-          />
+          {/* File Upload Input */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Upload Files (Max 10MB each)
+            </label>
+            <input
+              type="file"
+              multiple
+              onChange={handleFileUpload}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+              accept="image/*,audio/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Supported: Images, Audio, Video, PDF, Documents
+            </p>
+          </div>
 
           {/* Manual URL Entry (Alternative Option) */}
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
