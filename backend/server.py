@@ -889,18 +889,42 @@ async def create_task(task_input: TaskCreate):
             if additional_recipients:
                 await send_task_notification(task_dict, "task_created", additional_recipients)
         
-        # Notify groups if specified  
+        # Notify groups if specified (send as group messages)
         if notify_groups:
             for group_id in notify_groups:
                 group = await db.group_chats.find_one({"id": group_id}, {"_id": 0})
                 if group:
-                    group_recipients = [
-                        {"user_id": member['user_id'], "user_name": member['user_name']} 
-                        for member in group['members']
-                        if member['user_id'] != task.created_by  # Don't notify creator
-                    ]
-                    if group_recipients:
-                        await send_task_notification(task_dict, "task_created", group_recipients)
+                    try:
+                        # Create task notification message in group chat
+                        notification_content = f"🆕 **New Task Created**\\n\\n**{task.title}**\\n{task.description}\\n\\nPriority: {task.priority} | Department: {task.department}\\nAssigned to: {assigned_worker['name'] if assigned_worker else 'Unknown'}\\n{f'Due: {task.due_date}' if task.due_date else ''}"
+                        
+                        # Send as system message in group
+                        group_message = GroupMessage(
+                            group_id=group_id,
+                            sender_id="system",
+                            sender_name="Factory System",
+                            content=notification_content,
+                            message_type="task_notification",
+                            task_id=task.id,
+                            attachments=task_attachments
+                        )
+                        
+                        msg_doc = group_message.model_dump()
+                        msg_doc = serialize_doc(msg_doc)
+                        await db.group_messages.insert_one(msg_doc)
+                        
+                        # Update group last message
+                        await db.group_chats.update_one(
+                            {"id": group_id},
+                            {"$set": {
+                                "last_message": f"🆕 New Task: {task.title}",
+                                "last_message_at": group_message.sent_at.isoformat()
+                            }}
+                        )
+                        
+                    except Exception as e:
+                        logging.error(f"Failed to send group message for task {task.id}: {str(e)}")
+    
     
     return task
 
