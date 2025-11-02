@@ -603,14 +603,20 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser, isSubmitting
         <div className="flex gap-3 pt-6 border-t">
           <button
             type="submit"
-            className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition shadow-sm"
+            disabled={isSubmitting}
+            className={`flex-1 px-6 py-3 rounded-lg font-medium transition shadow-sm ${
+              isSubmitting 
+                ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                : 'bg-green-600 hover:bg-green-700 text-white'
+            }`}
           >
-            ✅ Create Task
+            {isSubmitting ? '⏳ Creating Task...' : '✅ Create Task'}
           </button>
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition"
+            disabled={isSubmitting}
+            className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition disabled:opacity-50"
           >
             Cancel
           </button>
