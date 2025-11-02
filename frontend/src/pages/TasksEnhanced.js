@@ -87,7 +87,9 @@ const TasksEnhanced = () => {
       
       // Create task with extended timeout for file uploads
       const response = await axios.post(`${API}/tasks`, taskData, {
-        timeout: 30000 // 30 second timeout for file uploads
+        timeout: 60000, // 60 second timeout for 6MB file uploads
+        maxContentLength: 50 * 1024 * 1024, // 50MB max request size
+        maxBodyLength: 50 * 1024 * 1024 // 50MB max body size
       });
       
       console.log('Task created successfully:', response.data);
