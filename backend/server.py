@@ -827,19 +827,22 @@ async def get_quality_checks(order_id: Optional[str] = None):
 async def create_task(task_input: TaskCreate):
     task_data = task_input.model_dump()
     initial_attachments = task_data.pop('initial_attachments', [])
+    notify_users = task_data.pop('notify_users', [])
+    notify_groups = task_data.pop('notify_groups', [])
+    send_notifications = task_data.pop('send_notifications', True)
     
-    # Validate attachment sizes (increased to 3MB for Base64 encoded data)
+    # Validate attachment sizes (increased to 8MB for Base64 encoded data - 6MB file becomes ~8MB Base64)
     for att in initial_attachments:
-        if att.get('file_url', '').startswith('data:') and len(att.get('file_url', '')) > 3000000:  # 3MB limit for data URLs
+        if att.get('file_url', '').startswith('data:') and len(att.get('file_url', '')) > 8000000:  # 8MB limit for data URLs
             raise HTTPException(status_code=413, detail=f"Attachment '{att.get('file_name', 'unknown')}' is too large. Maximum size is 6MB.")
     
-    
-    task = Task(**task_data)
+    task = Task(**{**task_data, 'notify_users': notify_users, 'notify_groups': notify_groups, 'send_notifications': send_notifications})
     doc = task.model_dump()
     doc = serialize_doc(doc)
     await db.tasks.insert_one(doc)
     
     # Add initial attachments if provided
+    task_attachments = []
     if initial_attachments:
         for att in initial_attachments:
             try:
@@ -853,12 +856,51 @@ async def create_task(task_input: TaskCreate):
                 att_doc = attachment.model_dump()
                 att_doc = serialize_doc(att_doc)
                 await db.task_attachments.insert_one(att_doc)
+                task_attachments.append(att_doc)
             except Exception as e:
                 logging.warning(f"Failed to save attachment {att.get('file_name', 'unknown')}: {str(e)}")
                 # Continue with task creation even if attachment fails
     
     # Log activity
     await log_activity(task.id, task.created_by or 'system', task.created_by or 'System', 'created', f'Created task: {task.title}')
+    
+    # Send notifications if enabled
+    if send_notifications:
+        task_dict = task.model_dump()
+        task_dict['attachments'] = task_attachments
+        
+        # Always notify the assigned person
+        assigned_worker = await db.workers.find_one({"id": task.assigned_to}, {"_id": 0})
+        if assigned_worker:
+            await send_task_notification(
+                task_dict, 
+                "task_created", 
+                [{"user_id": task.assigned_to, "user_name": assigned_worker['name']}]
+            )
+        
+        # Notify additional users if specified
+        if notify_users:
+            additional_recipients = []
+            for user_id in notify_users:
+                worker = await db.workers.find_one({"id": user_id}, {"_id": 0})
+                if worker:
+                    additional_recipients.append({"user_id": user_id, "user_name": worker['name']})
+            
+            if additional_recipients:
+                await send_task_notification(task_dict, "task_created", additional_recipients)
+        
+        # Notify groups if specified  
+        if notify_groups:
+            for group_id in notify_groups:
+                group = await db.group_chats.find_one({"id": group_id}, {"_id": 0})
+                if group:
+                    group_recipients = [
+                        {"user_id": member['user_id'], "user_name": member['user_name']} 
+                        for member in group['members']
+                        if member['user_id'] != task.created_by  # Don't notify creator
+                    ]
+                    if group_recipients:
+                        await send_task_notification(task_dict, "task_created", group_recipients)
     
     return task
 
