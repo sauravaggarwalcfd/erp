@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import FileUploadComponent from './FileUploadComponent';
 
 const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser }) => {
   const [formData, setFormData] = useState({
@@ -27,7 +26,6 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser }) => {
     file_url: '',
     file_type: 'document'
   });
-  const [uploadedFiles, setUploadedFiles] = useState([]);
 
   const departments = ['cutting', 'stitching', 'finishing', 'qc', 'packaging', 'admin'];
   const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
