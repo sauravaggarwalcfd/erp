@@ -534,6 +534,71 @@ async def log_activity(task_id: str, user_id: str, user_name: str, action: str, 
     await db.activity_logs.insert_one(doc)
 
 
+# Helper function to send task notifications
+async def send_task_notification(task_data: dict, notification_type: str, recipients: List[dict]):
+    """Send task notifications to specified recipients"""
+    for recipient in recipients:
+        try:
+            # Create notification content based on type
+            if notification_type == "task_created":
+                title = f"🆕 New Task Assigned: {task_data['title']}"
+                content = f"You have been assigned a new {task_data['priority']} priority task in {task_data['department']} department."
+            elif notification_type == "task_reminder":
+                title = f"⏰ Task Reminder: {task_data['title']}"
+                content = f"Reminder: Task is due on {task_data.get('due_date', 'no due date')}."
+            elif notification_type == "task_completed":
+                title = f"✅ Task Completed: {task_data['title']}"
+                content = f"Task has been marked as completed in {task_data['department']} department."
+            else:
+                title = f"📋 Task Update: {task_data['title']}"
+                content = f"Task has been updated."
+
+            notification = TaskNotification(
+                task_id=task_data['id'],
+                notification_type=notification_type,
+                recipient_id=recipient['user_id'],
+                recipient_name=recipient['user_name'],
+                title=title,
+                content=content,
+                task_data=task_data,
+                attachments=task_data.get('attachments', [])
+            )
+            
+            doc = notification.model_dump()
+            doc = serialize_doc(doc)
+            await db.task_notifications.insert_one(doc)
+            
+        except Exception as e:
+            logging.error(f"Failed to send notification to {recipient.get('user_name', 'unknown')}: {str(e)}")
+
+
+# Helper function to get conversation between two users
+async def get_or_create_conversation(user1_id: str, user1_name: str, user2_id: str, user2_name: str):
+    """Get existing conversation or create new one"""
+    # Check if conversation exists (either direction)
+    conversation = await db.conversations.find_one({
+        "$or": [
+            {"participant1_id": user1_id, "participant2_id": user2_id},
+            {"participant1_id": user2_id, "participant2_id": user1_id}
+        ]
+    }, {"_id": 0})
+    
+    if conversation:
+        return deserialize_doc(conversation)
+    
+    # Create new conversation
+    new_conversation = Conversation(
+        participant1_id=user1_id,
+        participant1_name=user1_name,
+        participant2_id=user2_id,
+        participant2_name=user2_name
+    )
+    doc = new_conversation.model_dump()
+    doc = serialize_doc(doc)
+    await db.conversations.insert_one(doc)
+    return new_conversation.model_dump()
+
+
 # ==================== ROUTES ====================
 
 @api_router.get("/")
