@@ -11,6 +11,8 @@ const TasksEnhanced = () => {
   const [showForm, setShowForm] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [filterStatus, setFilterStatus] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [lastCreatedTask, setLastCreatedTask] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
