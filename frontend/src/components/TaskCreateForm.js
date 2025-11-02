@@ -26,11 +26,6 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser }) => {
     file_url: '',
     file_type: 'document'
   });
-  const [attachmentForm, setAttachmentForm] = useState({
-    file_name: '',
-    file_url: '',
-    file_type: 'document'
-  });
 
   const departments = ['cutting', 'stitching', 'finishing', 'qc', 'packaging', 'admin'];
   const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
