@@ -56,12 +56,11 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser, isSubmitting
     const files = Array.from(event.target.files);
     
     files.forEach(file => {
-      // Validate file size (max 2MB for images, 10MB for others)
-      const maxSize = file.type.startsWith('image/') ? 2 * 1024 * 1024 : 10 * 1024 * 1024;
-      const maxSizeLabel = file.type.startsWith('image/') ? '2MB' : '10MB';
+      // Validate file size (max 6MB for all files)
+      const maxSize = 6 * 1024 * 1024; // 6MB
       
       if (file.size > maxSize) {
-        alert(`File "${file.name}" is too large. Maximum size for ${file.type.startsWith('image/') ? 'images' : 'files'} is ${maxSizeLabel}.`);
+        alert(`File "${file.name}" is too large. Maximum size is 6MB.`);
         return;
       }
 
@@ -84,10 +83,13 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser, isSubmitting
             original_file: true
           };
 
-          // For images, validate the data URL isn't too large
-          if (file.type.startsWith('image/') && e.target.result.length > 500000) { // ~500KB as Base64
-            alert(`Image "${file.name}" is too large when encoded. Please use a smaller image or compress it.`);
-            return;
+          // Warn about large Base64 size but allow it
+          if (e.target.result.length > 2000000) { // ~2MB as Base64
+            console.warn(`Large file detected: ${file.name} (${e.target.result.length} chars as Base64)`);
+            // Show warning but continue
+            setTimeout(() => {
+              alert(`📁 Large file "${file.name}" attached. Saving may take a moment...`);
+            }, 100);
           }
 
           console.log(`File processed successfully: ${file.name}`);
