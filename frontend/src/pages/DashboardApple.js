@@ -130,41 +130,41 @@ const DashboardApple = () => {
             <h2 className="text-lg font-semibold text-gray-900 mb-4">System Status</h2>
             <div className="space-y-3">
               {stats?.materials?.low_stock > 0 && (
-                <div className="flex items-center gap-4 p-5 bg-red-50 rounded-2xl">
-                  <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <span className="text-2xl">⚠️</span>
+                <div className="flex items-center gap-3 p-4 bg-red-50 rounded-xl">
+                  <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-xl">⚠️</span>
                   </div>
                   <div className="flex-1">
-                    <div className="font-semibold text-gray-900 mb-1">Low Stock Alert</div>
-                    <div className="text-sm text-gray-600">{stats.materials.low_stock} materials require immediate attention</div>
+                    <div className="font-semibold text-gray-900 text-sm mb-0.5">Low Stock Alert</div>
+                    <div className="text-xs text-gray-600">{stats.materials.low_stock} materials require immediate attention</div>
                   </div>
-                  <button className="px-4 py-2 bg-red-600 text-white rounded-full text-sm font-medium hover:bg-red-700 transition-all">Review</button>
+                  <button className="px-3 py-1.5 bg-red-600 text-white rounded-full text-xs font-medium hover:bg-red-700 transition-all">Review</button>
                 </div>
               )}
 
               {stats?.tasks?.pending > 0 && (
-                <div className="flex items-center gap-4 p-5 bg-blue-50 rounded-2xl">
-                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <span className="text-2xl">📝</span>
+                <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-xl">📝</span>
                   </div>
                   <div className="flex-1">
-                    <div className="font-semibold text-gray-900 mb-1">Pending Tasks</div>
-                    <div className="text-sm text-gray-600">{stats.tasks.pending} tasks awaiting completion</div>
+                    <div className="font-semibold text-gray-900 text-sm mb-0.5">Pending Tasks</div>
+                    <div className="text-xs text-gray-600">{stats.tasks.pending} tasks awaiting completion</div>
                   </div>
-                  <button className="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-medium hover:bg-blue-700 transition-all">View</button>
+                  <button className="px-3 py-1.5 bg-blue-600 text-white rounded-full text-xs font-medium hover:bg-blue-700 transition-all">View</button>
                 </div>
               )}
 
               {stats?.orders?.active > 0 && (
-                <div className="flex items-center gap-4 p-5 bg-green-50 rounded-2xl">
-                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <span className="text-2xl">🚀</span>
+                <div className="flex items-center gap-3 p-4 bg-green-50 rounded-xl">
+                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-xl">🚀</span>
                   </div>
                   <div className="flex-1">
-                    <div className="font-semibold text-gray-900 mb-1">Production Active</div>
-                    <div className="text-sm text-gray-600">{stats.orders.active} orders currently in progress</div>
+                    <div className="font-semibold text-gray-900 text-sm mb-0.5">Production Active</div>
+                    <div className="text-xs text-gray-600">{stats.orders.active} orders currently in progress</div>
                   </div>
-                  <button className="px-4 py-2 bg-green-600 text-white rounded-full text-sm font-medium hover:bg-green-700 transition-all">Monitor</button>
+                  <button className="px-3 py-1.5 bg-green-600 text-white rounded-full text-xs font-medium hover:bg-green-700 transition-all">Monitor</button>
                 </div>
               )}
             </div>
