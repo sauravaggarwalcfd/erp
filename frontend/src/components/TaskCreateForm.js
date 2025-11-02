@@ -438,38 +438,22 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser }) => {
 
         {/* Attachments */}
         <div className="mb-6 border-t pt-6">
-          <h3 className="font-semibold text-gray-700 mb-3 flex items-center">
+          <h3 className="font-semibold text-gray-700 mb-4 flex items-center">
             <span className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-xs mr-2">5</span>
             Attachments ({formData.initial_attachments.length})
           </h3>
           
-          {/* File Upload from Device */}
-          <div className="bg-blue-50 border-2 border-dashed border-blue-300 rounded-lg p-6 mb-4 text-center">
-            <div className="text-4xl mb-2">📁</div>
-            <h4 className="font-medium text-gray-800 mb-2">Upload Files from Your Device</h4>
-            <p className="text-sm text-gray-600 mb-4">
-              Drag & drop files here or click to browse<br/>
-              <span className="text-xs">Supports: Images, Audio, Video, Documents (Max 10MB each)</span>
-            </p>
-            <label className="cursor-pointer">
-              <input
-                type="file"
-                multiple
-                onChange={handleFileUpload}
-                className="hidden"
-                accept="image/*,audio/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
-              />
-              <span className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition shadow-sm">
-                🗂️ Browse Files from Device
-              </span>
-            </label>
-          </div>
+          <FileUploadComponent 
+            onFilesUploaded={handleFilesUploaded}
+            currentUser={currentUser}
+            existingAttachments={formData.initial_attachments}
+          />
 
-          {/* Manual URL/Link Entry */}
-          <div className="bg-gray-50 p-4 rounded-lg mb-3">
+          {/* Manual URL Entry (Alternative Option) */}
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
             <h4 className="font-medium text-gray-700 mb-3 flex items-center">
               <span className="text-lg mr-2">🔗</span>
-              Or Add Links Manually
+              Or Add External Links
             </h4>
             <div className="grid grid-cols-3 gap-3 mb-3">
               <div>
@@ -479,12 +463,12 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser }) => {
                   onChange={(e) => setAttachmentForm({ ...attachmentForm, file_type: e.target.value })}
                   className="w-full px-2 py-2 border border-gray-300 rounded text-sm"
                 >
-                  <option value="image">🖼️ Image (JPG, PNG, GIF)</option>
-                  <option value="audio">🎵 Audio (MP3, WAV)</option>
-                  <option value="video">🎬 Video (MP4, AVI)</option>
-                  <option value="pdf">📕 PDF Document</option>
-                  <option value="document">📄 Document (DOCX, XLSX)</option>
-                  <option value="link">🔗 Link/URL</option>
+                  <option value="image">🖼️ Image</option>
+                  <option value="audio">🎵 Audio</option>
+                  <option value="video">🎬 Video</option>
+                  <option value="pdf">📕 PDF</option>
+                  <option value="document">📄 Document</option>
+                  <option value="link">🔗 Link</option>
                 </select>
               </div>
               <div>
@@ -494,17 +478,17 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser }) => {
                   value={attachmentForm.file_name}
                   onChange={(e) => setAttachmentForm({ ...attachmentForm, file_name: e.target.value })}
                   className="w-full px-2 py-2 border border-gray-300 rounded text-sm"
-                  placeholder="e.g., Fabric specs.pdf"
+                  placeholder="e.g., Quality manual.pdf"
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">File URL/Link</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">External URL</label>
                 <input
                   type="url"
                   value={attachmentForm.file_url}
                   onChange={(e) => setAttachmentForm({ ...attachmentForm, file_url: e.target.value })}
                   className="w-full px-2 py-2 border border-gray-300 rounded text-sm"
-                  placeholder="https://..."
+                  placeholder="https://example.com/file.pdf"
                 />
               </div>
             </div>
@@ -512,45 +496,29 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser }) => {
               type="button"
               onClick={handleAddAttachment}
               className="w-full px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
+              disabled={!attachmentForm.file_name.trim() || !attachmentForm.file_url.trim()}
             >
-              ➕ Add Link
+              ➕ Add External Link
             </button>
           </div>
 
-          {/* Attachment List */}
+          {/* Remove Attachments */}
           {formData.initial_attachments.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="font-medium text-gray-700 mb-2">📎 Attached Files ({formData.initial_attachments.length})</h4>
-              {formData.initial_attachments.map((att, idx) => (
-                <div key={idx} className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg shadow-sm">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{getFileIcon(att.file_type)}</span>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-800">{att.file_name}</p>
-                      <div className="flex items-center gap-2 text-xs text-gray-500">
-                        <span className="capitalize">{att.file_type}</span>
-                        {att.file_size && <span>• {formatFileSize(att.file_size)}</span>}
-                        {att.original_file ? (
-                          <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full">📱 Device Upload</span>
-                        ) : (
-                          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">🔗 Link</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveAttachment(idx)}
-                    className="text-red-600 hover:text-red-800 p-1"
-                    title="Remove attachment"
-                  >
-                    🗑️
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+            <div className="mt-4">
+              <div className="flex justify-between items-center mb-2">
+                <h4 className="font-medium text-gray-700">📋 Files to Upload ({formData.initial_attachments.length})</h4>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, initial_attachments: [] })}
+                  className="text-xs text-red-600 hover:text-red-800"
+                >
+                  Clear All
+                </button>
+              </div>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {formData.initial_attachments.map((att, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg">
+                    <div className=\"flex items-center gap-3\">\n                      <span className=\"text-xl\">{getFileIcon(att.file_type)}</span>\n                      <div>\n                        <p className=\"text-sm font-medium text-gray-800\">{att.file_name}</p>\n                        <div className=\"flex items-center gap-2 text-xs text-gray-500\">\n                          <span className=\"capitalize\">{att.file_type}</span>\n                          {att.file_size && <span>• {formatFileSize(att.file_size)}</span>}\n                          {att.original_file ? (\n                            <span className=\"px-2 py-0.5 bg-green-100 text-green-700 rounded-full\">📱 Device</span>\n                          ) : (\n                            <span className=\"px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full\">🔗 Link</span>\n                          )}\n                        </div>\n                      </div>\n                    </div>\n                    <button\n                      type=\"button\"\n                      onClick={() => handleRemoveAttachment(idx)}\n                      className=\"text-red-600 hover:text-red-800 p-1\"\n                      title=\"Remove attachment\"\n                    >\n                      🗑️\n                    </button>\n                  </div>\n                ))}\n              </div>\n            </div>\n          )}\n        </div>
 
         {/* Action Buttons */}
         <div className="flex gap-3 pt-6 border-t">
