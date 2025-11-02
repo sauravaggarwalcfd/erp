@@ -29,9 +29,24 @@ const TaskCreateForm = ({ workers, onSubmit, onCancel, currentUser, isSubmitting
     file_url: '',
     file_type: 'document'
   });
+  const [groupChats, setGroupChats] = useState([]);
 
   const departments = ['cutting', 'stitching', 'finishing', 'qc', 'packaging', 'admin'];
   const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+  // Fetch group chats when component mounts
+  useEffect(() => {
+    fetchGroupChats();
+  }, []);
+
+  const fetchGroupChats = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/groups`);
+      setGroupChats(response.data);
+    } catch (error) {
+      console.error('Error fetching group chats:', error);
+    }
+  };
 
   const handleAddTag = () => {
     if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
