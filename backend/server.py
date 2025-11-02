@@ -328,7 +328,7 @@ def serialize_doc(doc):
     return doc
 
 def deserialize_doc(doc):
-    datetime_fields = ['created_at', 'updated_at', 'started_at', 'completed_at', 'checked_at', 'last_updated', 'joined_date']
+    datetime_fields = ['created_at', 'updated_at', 'started_at', 'completed_at', 'checked_at', 'last_updated', 'joined_date', 'logged_at', 'uploaded_at']
     if doc:
         for field in datetime_fields:
             if field in doc and isinstance(doc[field], str):
