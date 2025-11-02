@@ -74,12 +74,20 @@ const TasksEnhanced = () => {
 
   const handleSubmit = async (taskData) => {
     try {
-      await axios.post(`${API}/tasks`, taskData);
+      console.log('Submitting task data:', taskData);
+      const response = await axios.post(`${API}/tasks`, taskData);
+      console.log('Task created successfully:', response.data);
+      
       setShowForm(false);
-      fetchTasks();
+      fetchTasks(); // Refresh task list
+      
+      // Show success message
+      alert(`✅ Task "${taskData.title}" created successfully!`);
+      
     } catch (error) {
       console.error('Error creating task:', error);
-      alert('Error creating task. Please try again.');
+      console.error('Error details:', error.response?.data);
+      alert('❌ Error creating task: ' + (error.response?.data?.detail || error.message));
     }
   };
 
