@@ -235,6 +235,9 @@ class TaskCreate(BaseModel):
     reminder_enabled: bool = False
     reminder_before_hours: Optional[int] = None
     initial_attachments: List[dict] = []  # For files attached during creation
+    notify_users: List[str] = []  # User IDs to notify
+    notify_groups: List[str] = []  # Group IDs to notify
+    send_notifications: bool = True
 
 class Task(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -255,9 +258,157 @@ class Task(BaseModel):
     specific_dates: List[str] = []
     reminder_enabled: bool = False
     reminder_before_hours: Optional[int] = None
+    notify_users: List[str] = []
+    notify_groups: List[str] = []
+    send_notifications: bool = True
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     completed_at: Optional[datetime] = None
     created_by: Optional[str] = None
+
+
+# Conversation Models (1-on-1 Chat)
+class ConversationCreate(BaseModel):
+    participant1_id: str
+    participant1_name: str
+    participant2_id: str
+    participant2_name: str
+
+class Conversation(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    participant1_id: str
+    participant1_name: str
+    participant2_id: str
+    participant2_name: str
+    last_message: Optional[str] = None
+    last_message_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+# Message Models (1-on-1)
+class MessageCreate(BaseModel):
+    conversation_id: str
+    sender_id: str
+    sender_name: str
+    content: str
+    message_type: MessageType = MessageType.TEXT
+    task_id: Optional[str] = None  # If message is about a task
+    attachments: List[dict] = []
+
+class Message(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    conversation_id: str
+    sender_id: str
+    sender_name: str
+    content: str
+    message_type: MessageType = MessageType.TEXT
+    task_id: Optional[str] = None
+    attachments: List[dict] = []
+    read_by_recipient: bool = False
+    sent_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+# Group Chat Models
+class GroupChatCreate(BaseModel):
+    name: str
+    description: str
+    department: Optional[str] = None
+    members: List[dict]  # [{"user_id": "id", "user_name": "name", "role": "admin/member"}]
+    created_by: str
+
+class GroupChat(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    description: str
+    department: Optional[str] = None
+    members: List[dict]
+    created_by: str
+    last_message: Optional[str] = None
+    last_message_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+# Group Message Models
+class GroupMessageCreate(BaseModel):
+    group_id: str
+    sender_id: str
+    sender_name: str
+    content: str
+    message_type: MessageType = MessageType.TEXT
+    task_id: Optional[str] = None
+    attachments: List[dict] = []
+
+class GroupMessage(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    group_id: str
+    sender_id: str
+    sender_name: str
+    content: str
+    message_type: MessageType = MessageType.TEXT
+    task_id: Optional[str] = None
+    attachments: List[dict] = []
+    read_by: List[str] = []  # List of user IDs who have read this message
+    sent_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+# Task Notification Models
+class TaskNotificationCreate(BaseModel):
+    task_id: str
+    notification_type: NotificationType
+    recipient_id: str
+    recipient_name: str
+    title: str
+    content: str
+    task_data: dict  # Complete task information
+    attachments: List[dict] = []
+
+class TaskNotification(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    task_id: str
+    notification_type: NotificationType
+    recipient_id: str
+    recipient_name: str
+    title: str
+    content: str
+    task_data: dict
+    attachments: List[dict] = []
+    read: bool = False
+    action_taken: Optional[str] = None  # "completed", "viewed", "snoozed"
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    read_at: Optional[datetime] = None
+    
+
+# Task Completion Models (for interactive notifications)
+class TaskCompletionCreate(BaseModel):
+    task_id: str
+    completed_by: str
+    completed_by_name: str
+    actual_hours: Optional[float] = None
+    completion_notes: str
+    completion_status: str = "completed"  # completed, partially_completed, blocked
+    completion_attachments: List[dict] = []
+
+class TaskCompletion(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    task_id: str
+    completed_by: str
+    completed_by_name: str
+    actual_hours: Optional[float] = None
+    completion_notes: str
+    completion_status: str = "completed"
+    completion_attachments: List[dict] = []
+    completed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 # Task Comment Models
