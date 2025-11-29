@@ -162,10 +162,16 @@ export default function MasterBuilder({ user, onLogout }) {
             <h1 className="text-3xl font-bold text-slate-800">Dynamic Master Builder</h1>
             <p className="text-slate-600 mt-1">Create and manage custom master data for your factory</p>
           </div>
-          <Button onClick={handleCreateNew} className="bg-blue-600 hover:bg-blue-700">
-            <Plus className="w-4 h-4 mr-2" />
-            Create New Master
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={initializePredefinedMasters} variant="outline" className="bg-green-50 text-green-700 border-green-200">
+              <Plus className="w-4 h-4 mr-2" />
+              Load Standard Masters
+            </Button>
+            <Button onClick={handleCreateNew} className="bg-blue-600 hover:bg-blue-700">
+              <Plus className="w-4 h-4 mr-2" />
+              Create Custom Master
+            </Button>
+          </div>
         </div>
 
         {/* Category Filter */}
