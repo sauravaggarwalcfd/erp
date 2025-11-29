@@ -490,21 +490,15 @@ export default function DynamicMasterManager({ config, onBack }) {
         </CardContent>
       </Card>
 
-      {/* Data Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>All Records</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="text-center py-8 text-slate-500">Loading...</div>
-          ) : sortedData.length === 0 ? (
-            <div className="text-center py-12 text-slate-500">
-              {searchTerm || Object.keys(filters).some(k => filters[k]) 
-                ? "No matching records found" 
-                : "No records yet. Click 'Add New' to create one."}
-            </div>
-          ) : groupBy ? (
+      {/* Data Display with View Types */}
+      <MasterViewTypes
+        data={sortedData}
+        config={config}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        currentView={currentView}
+        onViewChange={setCurrentView}
+      />
             /* Grouped View with Sub-Grouping Support */
             <div className="space-y-6">
               {Object.keys(groupedData).map(mainGroupValue => {
