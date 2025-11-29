@@ -499,7 +499,8 @@ export default function DynamicMasterManager({ config, onBack }) {
         currentView={currentView}
         onViewChange={setCurrentView}
       />
-            /* Grouped View with Sub-Grouping Support */
+
+      {/* Form Dialog */}
             <div className="space-y-6">
               {Object.keys(groupedData).map(mainGroupValue => {
                 const mainGroupData = groupedData[mainGroupValue];
