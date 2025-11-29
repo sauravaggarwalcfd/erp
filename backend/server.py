@@ -842,6 +842,7 @@ async def create_master_config(config: MasterConfiguration, current_user: User =
     """Create a new master configuration"""
     try:
         config.created_by = current_user.username
+        config.created_at = datetime.now(timezone.utc)
         doc = config.model_dump()
         doc['created_at'] = doc['created_at'].isoformat()
         
