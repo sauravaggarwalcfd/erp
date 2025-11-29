@@ -42,10 +42,10 @@ const GarmentForge = () => {
 
   if (loading) {
     return (
-      <div className=\"flex items-center justify-center h-screen bg-gradient-to-br from-blue-50 to-indigo-100\">
-        <div className=\"text-center\">
-          <div className=\"text-6xl mb-4\">🏭</div>
-          <p className=\"text-xl font-medium text-gray-700\">Loading Garment Forge...</p>
+      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="text-center">
+          <div className="text-6xl mb-4">🏭</div>
+          <p className="text-xl font-medium text-gray-700">Loading Garment Forge...</p>
         </div>
       </div>
     );
