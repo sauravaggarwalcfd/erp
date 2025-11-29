@@ -41,6 +41,10 @@ const Layout = ({ children }) => {
         
         <nav className="flex-1 overflow-y-auto py-4">
           <Link to="/" className={`flex items-center px-6 py-3 hover:bg-blue-800 transition ${isActive('/')}`}>
+            <span className="mr-3">🏭</span>
+            <span>Garment Forge</span>
+          </Link>
+          <Link to="/dashboard" className={`flex items-center px-6 py-3 hover:bg-blue-800 transition ${isActive('/dashboard')}`}>
             <span className="mr-3">📊</span>
             <span>Dashboard</span>
           </Link>
