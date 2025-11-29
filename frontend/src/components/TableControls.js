@@ -31,6 +31,7 @@ export default function TableControls({ data, columns }) {
   const [filters, setFilters] = useState({});
   const [sortConfig, setSortConfig] = useState({ field: null, direction: null });
   const [groupBy, setGroupBy] = useState(null);
+  const [subGroupBy, setSubGroupBy] = useState(null);
   const [showFilterPanel, setShowFilterPanel] = useState(false);
 
   // Apply search filter
