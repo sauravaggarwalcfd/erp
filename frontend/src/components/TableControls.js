@@ -161,6 +161,15 @@ export default function TableControls({ data, columns }) {
 
   // Active filter count
   const activeFilterCount = Object.keys(filters).filter(k => filters[k]).length;
+  
+  // Check if using nested grouping
+  const isNestedGrouping = groupBy && subGroupBy;
+
+  // Get available sub-group columns (exclude the main group field)
+  const subGroupColumns = columns.filter(c => 
+    (c.type === 'dropdown' || c.type === 'text') && 
+    c.name !== groupBy
+  );
 
   // Render controls UI
   const renderControls = () => (
