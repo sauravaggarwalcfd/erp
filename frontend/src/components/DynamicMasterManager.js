@@ -7,7 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Upload, Download, ArrowLeft, Search } from "lucide-react";
+import { 
+  Plus, Edit, Trash2, Upload, Download, ArrowLeft, Search,
+  Filter, ArrowUpDown, ArrowUp, ArrowDown, Group, X
+} from "lucide-react";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -19,6 +22,12 @@ export default function DynamicMasterManager({ config, onBack }) {
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
+  
+  // Advanced filtering, sorting, grouping
+  const [filters, setFilters] = useState({});
+  const [sortConfig, setSortConfig] = useState({ field: null, direction: null });
+  const [groupBy, setGroupBy] = useState(null);
+  const [showFilterPanel, setShowFilterPanel] = useState(false);
 
   useEffect(() => {
     fetchData();
