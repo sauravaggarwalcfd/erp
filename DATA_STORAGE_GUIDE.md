@@ -42,7 +42,7 @@ Your application currently has **1,417 documents** across **11 collections**:
 
 ### Image Files:
 - **Location:** `/app/backend/uploads/`
-- **Access URL:** `https://garment-app.preview.emergentagent.com/uploads/{filename}`
+- **Access URL:** `https://garmentforge.preview.emergentagent.com/uploads/{filename}`
 - **Used For:** Fabric images, attachments, etc.
 
 ---
@@ -51,7 +51,7 @@ Your application currently has **1,417 documents** across **11 collections**:
 
 ### Option 1: Through Web Application (Recommended)
 Access your data through the UI:
-- **Login:** https://garment-app.preview.emergentagent.com
+- **Login:** https://garmentforge.preview.emergentagent.com
 - **Sections:**
   - Masters → View/Edit master data
   - BOM Management → View/Edit BOMs
