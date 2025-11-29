@@ -7,6 +7,7 @@ import Dashboard from "@/components/Dashboard";
 import Masters from "@/components/Masters";
 import BOMManagement from "@/components/BOMManagement";
 import MRPManagement from "@/components/MRPManagement";
+import MasterBuilder from "@/components/MasterBuilder";
 import BOMLayoutOptions from "@/components/BOMLayoutOptions";
 import { Toaster } from "@/components/ui/sonner";
 
