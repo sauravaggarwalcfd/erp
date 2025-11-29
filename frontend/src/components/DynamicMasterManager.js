@@ -29,6 +29,7 @@ export default function DynamicMasterManager({ config, onBack }) {
   const [sortConfig, setSortConfig] = useState({ field: null, direction: null });
   const [groupBy, setGroupBy] = useState(null);
   const [showFilterPanel, setShowFilterPanel] = useState(false);
+  const [currentView, setCurrentView] = useState('grid');
 
   useEffect(() => {
     fetchData();
