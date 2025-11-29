@@ -831,8 +831,8 @@ class MasterConfiguration(BaseModel):
     fields: List[FieldConfig]
     enableExcelUpload: bool = True
     enableImageUpload: bool = False
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    created_by: str
+    created_at: Optional[datetime] = None
+    created_by: Optional[str] = None
     updated_at: Optional[datetime] = None
     updated_by: Optional[str] = None
 
