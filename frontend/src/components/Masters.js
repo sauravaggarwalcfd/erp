@@ -10,14 +10,27 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, FileText } from "lucide-react";
+import MasterViewTypes from "./MasterViewTypes";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Generic Master Component
+// Generic Master Component with View Types
 function MasterTable({ title, description, columns, data, onAdd, onEdit, onDelete, renderForm, loading }) {
   const [open, setOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
+  const [currentView, setCurrentView] = useState('grid');
+
+  // Convert columns to config format for MasterViewTypes
+  const config = {
+    name: title,
+    fields: columns.map((col, idx) => ({
+      id: String(idx),
+      name: col.key,
+      label: col.label,
+      type: col.type || 'text'
+    }))
+  };
 
   return (
     <Card>
