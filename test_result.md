@@ -191,6 +191,18 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Operations tab already implemented with SAM calculations, Total SAM and Total Labor Cost. Needs full testing."
+  
+  - task: "TableControls integration in Masters page"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/Masters.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "TESTED: TableControls fully integrated and functional on Masters page (Buyers tab). All components working: Search (filters ABC correctly), Advanced Filters (Contact Person filter works), Sorting (Name asc/desc), Grouping (creates visual groups), Clear All (resets all controls). Expected data present: ABC Garments (John Doe), XYZ Fashion (Jane Smith), Global Textiles (Bob Johnson). No console errors. Integration complete and successful."
 
 metadata:
   created_by: "main_agent"
