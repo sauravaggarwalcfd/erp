@@ -803,6 +803,310 @@ async def delete_mrp(mrp_id: str, current_user: User = Depends(get_current_user)
     await db.mrps.delete_one({"id": mrp_id})
     return {"message": "MRP deleted successfully"}
 
+
+# ============================================================================
+# DYNAMIC MASTER BUILDER SYSTEM
+# ============================================================================
+
+# Models for Dynamic Master Builder
+class FieldConfig(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str  # Field name
+    label: str  # Display label
+    type: str  # text, number, dropdown, date, file, etc.
+    required: bool = False
+    options: Optional[List[str]] = None  # For dropdown/multi-select
+    validation: Optional[dict] = None  # Min, max, regex, etc.
+    placeholder: Optional[str] = None
+    helpText: Optional[str] = None
+    defaultValue: Optional[str] = None
+    order: int = 0
+
+class MasterConfiguration(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str  # Machine Master, Process Master, etc.
+    description: Optional[str] = None
+    icon: Optional[str] = None
+    category: str  # Production, Material, Quality, HR, etc.
+    fields: List[FieldConfig]
+    enableExcelUpload: bool = True
+    enableImageUpload: bool = False
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_by: str
+    updated_at: Optional[datetime] = None
+    updated_by: Optional[str] = None
+
+# API Routes for Master Configuration
+@api_router.post("/master-configs")
+async def create_master_config(config: MasterConfiguration, current_user: User = Depends(get_current_user)):
+    """Create a new master configuration"""
+    try:
+        config.created_by = current_user.username
+        doc = config.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        
+        await db.master_configurations.insert_one(doc)
+        
+        return {
+            "message": "Master configuration created successfully",
+            "id": config.id
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating master config: {str(e)}")
+
+@api_router.get("/master-configs")
+async def get_master_configs(category: Optional[str] = None, current_user: User = Depends(get_current_user)):
+    """Get all master configurations"""
+    try:
+        query = {}
+        if category:
+            query["category"] = category
+        
+        configs = await db.master_configurations.find(query, {"_id": 0}).to_list(1000)
+        
+        for config in configs:
+            if isinstance(config.get('created_at'), str):
+                config['created_at'] = datetime.fromisoformat(config['created_at'])
+            if isinstance(config.get('updated_at'), str):
+                config['updated_at'] = datetime.fromisoformat(config['updated_at'])
+        
+        return configs
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching master configs: {str(e)}")
+
+@api_router.get("/master-configs/{config_id}")
+async def get_master_config(config_id: str, current_user: User = Depends(get_current_user)):
+    """Get specific master configuration"""
+    try:
+        config = await db.master_configurations.find_one({"id": config_id}, {"_id": 0})
+        
+        if not config:
+            raise HTTPException(status_code=404, detail="Master configuration not found")
+        
+        if isinstance(config.get('created_at'), str):
+            config['created_at'] = datetime.fromisoformat(config['created_at'])
+        if isinstance(config.get('updated_at'), str):
+            config['updated_at'] = datetime.fromisoformat(config['updated_at'])
+        
+        return config
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching master config: {str(e)}")
+
+@api_router.put("/master-configs/{config_id}")
+async def update_master_config(config_id: str, config: MasterConfiguration, current_user: User = Depends(get_current_user)):
+    """Update master configuration"""
+    try:
+        existing = await db.master_configurations.find_one({"id": config_id})
+        
+        if not existing:
+            raise HTTPException(status_code=404, detail="Master configuration not found")
+        
+        config.updated_at = datetime.now(timezone.utc)
+        config.updated_by = current_user.username
+        
+        doc = config.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        doc['updated_at'] = doc['updated_at'].isoformat()
+        
+        await db.master_configurations.update_one(
+            {"id": config_id},
+            {"$set": doc}
+        )
+        
+        return {"message": "Master configuration updated successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating master config: {str(e)}")
+
+@api_router.delete("/master-configs/{config_id}")
+async def delete_master_config(config_id: str, current_user: User = Depends(get_current_user)):
+    """Delete master configuration"""
+    try:
+        result = await db.master_configurations.delete_one({"id": config_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Master configuration not found")
+        
+        # Also delete all data for this master type
+        collection_name = f"dynamic_{config_id}"
+        await db[collection_name].drop()
+        
+        return {"message": "Master configuration deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting master config: {str(e)}")
+
+# API Routes for Dynamic Master Data
+@api_router.post("/dynamic-masters/{config_id}/data")
+async def create_dynamic_master_data(config_id: str, data: dict, current_user: User = Depends(get_current_user)):
+    """Create data for a dynamic master"""
+    try:
+        # Get master configuration
+        config = await db.master_configurations.find_one({"id": config_id})
+        
+        if not config:
+            raise HTTPException(status_code=404, detail="Master configuration not found")
+        
+        # Validate data against configuration
+        # (In production, add comprehensive validation based on field configs)
+        
+        # Add metadata
+        data["id"] = str(uuid.uuid4())
+        data["created_at"] = datetime.now(timezone.utc).isoformat()
+        data["created_by"] = current_user.username
+        
+        # Store in dynamic collection
+        collection_name = f"dynamic_{config_id}"
+        await db[collection_name].insert_one(data)
+        
+        return {
+            "message": "Master data created successfully",
+            "id": data["id"]
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating master data: {str(e)}")
+
+@api_router.get("/dynamic-masters/{config_id}/data")
+async def get_dynamic_master_data(config_id: str, current_user: User = Depends(get_current_user)):
+    """Get all data for a dynamic master"""
+    try:
+        # Get master configuration
+        config = await db.master_configurations.find_one({"id": config_id})
+        
+        if not config:
+            raise HTTPException(status_code=404, detail="Master configuration not found")
+        
+        # Fetch data from dynamic collection
+        collection_name = f"dynamic_{config_id}"
+        data = await db[collection_name].find({}, {"_id": 0}).to_list(1000)
+        
+        return data
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching master data: {str(e)}")
+
+@api_router.get("/dynamic-masters/{config_id}/data/{data_id}")
+async def get_dynamic_master_data_by_id(config_id: str, data_id: str, current_user: User = Depends(get_current_user)):
+    """Get specific data item for a dynamic master"""
+    try:
+        collection_name = f"dynamic_{config_id}"
+        data = await db[collection_name].find_one({"id": data_id}, {"_id": 0})
+        
+        if not data:
+            raise HTTPException(status_code=404, detail="Data not found")
+        
+        return data
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching data: {str(e)}")
+
+@api_router.put("/dynamic-masters/{config_id}/data/{data_id}")
+async def update_dynamic_master_data(config_id: str, data_id: str, data: dict, current_user: User = Depends(get_current_user)):
+    """Update data for a dynamic master"""
+    try:
+        # Add metadata
+        data["updated_at"] = datetime.now(timezone.utc).isoformat()
+        data["updated_by"] = current_user.username
+        
+        # Update in dynamic collection
+        collection_name = f"dynamic_{config_id}"
+        result = await db[collection_name].update_one(
+            {"id": data_id},
+            {"$set": data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Data not found")
+        
+        return {"message": "Master data updated successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating master data: {str(e)}")
+
+@api_router.delete("/dynamic-masters/{config_id}/data/{data_id}")
+async def delete_dynamic_master_data(config_id: str, data_id: str, current_user: User = Depends(get_current_user)):
+    """Delete data for a dynamic master"""
+    try:
+        collection_name = f"dynamic_{config_id}"
+        result = await db[collection_name].delete_one({"id": data_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Data not found")
+        
+        return {"message": "Master data deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting master data: {str(e)}")
+
+# Bulk Excel Upload for Dynamic Masters
+@api_router.post("/dynamic-masters/{config_id}/bulk-upload")
+async def bulk_upload_dynamic_master(
+    config_id: str,
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user)
+):
+    """Bulk upload data for dynamic master via Excel"""
+    try:
+        if not file.filename.endswith(('.xlsx', '.xls')):
+            raise HTTPException(status_code=400, detail="File must be an Excel file")
+        
+        # Get master configuration
+        config = await db.master_configurations.find_one({"id": config_id})
+        
+        if not config:
+            raise HTTPException(status_code=404, detail="Master configuration not found")
+        
+        # Read Excel file
+        contents = await file.read()
+        workbook = openpyxl.load_workbook(io.BytesIO(contents))
+        sheet = workbook.active
+        
+        # Get headers from first row
+        headers = [cell.value for cell in sheet[1]]
+        
+        # Process rows
+        added_count = 0
+        errors = []
+        collection_name = f"dynamic_{config_id}"
+        
+        for row_idx, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
+            try:
+                data = {}
+                for idx, value in enumerate(row):
+                    if idx < len(headers) and headers[idx]:
+                        field_name = headers[idx]
+                        data[field_name] = value if value is not None else ""
+                
+                # Add metadata
+                data["id"] = str(uuid.uuid4())
+                data["created_at"] = datetime.now(timezone.utc).isoformat()
+                data["created_by"] = current_user.username
+                
+                await db[collection_name].insert_one(data)
+                added_count += 1
+            except Exception as e:
+                errors.append(f"Row {row_idx}: {str(e)}")
+        
+        return {
+            "message": f"Successfully uploaded {added_count} records",
+            "added_count": added_count,
+            "errors": errors
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error uploading data: {str(e)}")
+
 # Excel Upload Route
 @api_router.post("/upload-excel")
 async def upload_excel(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
