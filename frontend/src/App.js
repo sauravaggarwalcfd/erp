@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import '@/App.css';
+import GarmentForge from './pages/GarmentForge';
 import Dashboard from './pages/Dashboard';
 import DashboardModern from './pages/DashboardModern';
 import DashboardMinimal from './pages/DashboardMinimal';
