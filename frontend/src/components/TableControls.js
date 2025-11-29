@@ -87,7 +87,7 @@ export default function TableControls({ data, columns }) {
     return sorted;
   };
 
-  // Apply grouping
+  // Apply grouping with sub-grouping support
   const applyGrouping = (items) => {
     if (!groupBy) return { ungrouped: items };
 
@@ -99,6 +99,22 @@ export default function TableControls({ data, columns }) {
       acc[groupValue].push(item);
       return acc;
     }, {});
+
+    // Apply sub-grouping if enabled
+    if (subGroupBy) {
+      const nestedGrouped = {};
+      Object.keys(grouped).forEach(mainGroup => {
+        nestedGrouped[mainGroup] = grouped[mainGroup].reduce((subAcc, item) => {
+          const subGroupValue = item[subGroupBy] || "Ungrouped";
+          if (!subAcc[subGroupValue]) {
+            subAcc[subGroupValue] = [];
+          }
+          subAcc[subGroupValue].push(item);
+          return subAcc;
+        }, {});
+      });
+      return nestedGrouped;
+    }
 
     return grouped;
   };
